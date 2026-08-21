@@ -25,7 +25,7 @@
 <link rel="apple-touch-icon" href="images/logo.webp">
 
 <link rel="preload" href="fonts/IBMPlexSansArabic-Regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/plex-serif-300.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
 
 <script type="application/ld+json">
 {
@@ -97,6 +97,23 @@
 @font-face{font-family:"IBM Plex Serif";src:url("fonts/plex-serif-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:"IBM Plex Serif";src:url("fonts/plex-serif-300i.woff2") format("woff2");font-weight:300;font-style:italic;font-display:swap}
 
+/* Fraunces — variable opsz axis (not wght): the optical-size axis is what
+   gives Fraunces real editorial stroke contrast at large display sizes.
+   Same technique + same files as this agency's own site (agency-site/src/index.css).
+   Gated to [dir="ltr"] only — no Arabic cut exists. */
+@font-face{font-family:"Fraunces Variable";font-style:normal;font-display:swap;font-weight:100 900;
+  src:url("fonts/fraunces-latin-opsz-normal.woff2") format("woff2-variations");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Fraunces Variable";font-style:normal;font-display:swap;font-weight:100 900;
+  src:url("fonts/fraunces-latin-ext-opsz-normal.woff2") format("woff2-variations");
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Fraunces Variable";font-style:italic;font-display:swap;font-weight:100 900;
+  src:url("fonts/fraunces-latin-opsz-italic.woff2") format("woff2-variations");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Fraunces Variable";font-style:italic;font-display:swap;font-weight:100 900;
+  src:url("fonts/fraunces-latin-ext-opsz-italic.woff2") format("woff2-variations");
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+
 /* ---------- language toggle ----------
    Scoped to explicit [lang-ar]/[lang-en] attribute selectors so no bare-tag
    rule can out-specificity them and leak the wrong language. */
@@ -112,11 +129,31 @@ body{background:#F5F1E8;color:#23201C;font-family:"IBM Plex Sans Arabic","IBM Pl
 html[dir="ltr"] body{font-family:"IBM Plex Sans","IBM Plex Sans Arabic",system-ui,sans-serif}
 ::selection{background:#8C6A3F;color:#F5F1E8}
 
-/* ---------- editorial display type ---------- */
+/* ---------- editorial display type ----------
+   LTR gets Fraunces (real serif editorial stroke contrast, opsz axis tuned
+   up at display sizes). RTL has no Arabic cut for Fraunces, so it stays on
+   IBM Plex Sans Arabic at its heaviest weight for the same visual authority —
+   this is the exact steal-list pairing from design_learnings, not a guess. */
 .display{font-weight:400;letter-spacing:-.015em;line-height:1.14}
-html[dir="rtl"] .display{line-height:1.36;letter-spacing:0}
+html[dir="ltr"] .display{font-family:"Fraunces Variable",Georgia,serif;font-weight:460;
+  font-optical-sizing:auto;font-variation-settings:"opsz" 30}
+html[dir="rtl"] .display{line-height:1.36;letter-spacing:0;font-family:"IBM Plex Sans Arabic",sans-serif;font-weight:700}
+/* larger the type, further the opsz axis leans into Fraunces' display cut */
+html[dir="ltr"] h1.display{font-variation-settings:"opsz" 60}
 .serif{font-family:"IBM Plex Serif",Georgia,serif}
-.kicker{font-family:"IBM Plex Serif",Georgia,serif;font-style:italic;font-weight:300;letter-spacing:.01em}
+/* the hero headline specifically runs at true editorial display scale —
+   Aventura/Clinique 7 both run their hero type near full viewport-height
+   letterforms; the sitewide .display utility sizes were too conservative
+   at this one spot to read as "premium" rather than merely "clean." */
+#top h1.display{font-size:2.55rem}
+@media (min-width:640px){#top h1.display{font-size:3.75rem}}
+@media (min-width:1024px){#top h1.display{font-size:5.6rem}}
+@media (min-width:1440px){#top h1.display{font-size:6.3rem}}
+html[dir="ltr"] .serif{font-family:"Fraunces Variable",Georgia,serif;font-optical-sizing:auto}
+/* kicker text is always Latin (the clinic's own English tagline), so it can
+   safely run on Fraunces italic in both language modes. */
+.kicker{font-family:"Fraunces Variable","IBM Plex Serif",Georgia,serif;font-style:italic;font-weight:420;
+  font-optical-sizing:auto;font-variation-settings:"opsz" 18;letter-spacing:.005em}
 .eyebrow{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;font-weight:500;color:#8C6A3F}
 html[dir="rtl"] .eyebrow{letter-spacing:.08em}
 .num{font-family:"IBM Plex Serif",Georgia,serif;font-weight:300;font-variant-numeric:lining-nums tabular-nums;direction:ltr;unicode-bidi:isolate}
@@ -163,31 +200,92 @@ html[dir="ltr"] .hero-veil{background:linear-gradient(to right,rgba(245,241,232,
     background:linear-gradient(to bottom,rgba(245,241,232,.62) 0%,rgba(245,241,232,.9) 48%,rgba(245,241,232,.98) 100%)}
 }
 
+/* ---------- departments: numbered sequential rail ----------
+   The second-strongest steal-list device (Aventura/Clinique 7/Dr Grigoriak):
+   large structural numerals with a connecting spine running through the
+   sequence, not a small corner tag. */
+.dept-grid{position:relative}
+@media (min-width:1024px){
+  .dept-grid::before{content:"";position:absolute;top:0;bottom:0;inset-inline-start:3rem;width:1px;
+    background:linear-gradient(to bottom,transparent,rgba(140,106,63,.4) 8%,rgba(140,106,63,.4) 92%,transparent);
+    z-index:1}
+}
+.dept-head{display:flex;align-items:flex-end;gap:1rem;margin-bottom:.3rem;position:relative;z-index:2}
+.dept-num{font-size:clamp(2.5rem,5.5vw,4.25rem);line-height:.82;font-weight:300;color:#8C6A3F;
+          font-variant-numeric:lining-nums tabular-nums;direction:ltr;unicode-bidi:isolate}
+html[dir="ltr"] .dept-num{font-family:"Fraunces Variable",Georgia,serif;font-optical-sizing:auto;font-variation-settings:"opsz" 34}
+html[dir="rtl"] .dept-num{font-family:"IBM Plex Serif",Georgia,serif}
+.dept-num-of{font-size:.32em;color:#B8A488;margin-inline-start:.2em;vertical-align:.45em;font-weight:400}
+.dept-icon{width:1.9rem;height:1.9rem;color:#8C6A3F;margin-bottom:.7rem;flex:none;stroke-width:1.15}
+.dept-rule{width:2.25rem;height:1px;background:#8C6A3F;opacity:.5;margin-top:.9rem}
+
+/* ---------- hero scroll-expansion video ----------
+   Starts as a small centred rounded card under the headline; JS drives
+   --hx (0..1 scroll progress) which this CSS maps to width/radius/scale so
+   the real clinic footage grows into a full-bleed band as the visitor
+   scrolls past the hero — the "Scroll Media Expansion Hero" technique. */
+.hero-expand{position:relative;margin-top:4rem;padding-bottom:2.5rem;--hx:0}
+.hero-expand-media{position:relative;margin:0 auto;overflow:hidden;background:#221F1B;
+  width:calc(min(620px,84vw) + (100% - min(620px,84vw)) * var(--hx));
+  border-radius:calc(30px - 30px*var(--hx));
+  aspect-ratio:calc(16 - 6*var(--hx)) / 8;
+  box-shadow:0 26px 60px -20px rgba(34,31,27,.4);
+  transition:border-radius .25s linear,box-shadow .4s ease}
+.hero-expand-poster,.hero-expand-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.hero-expand-video{opacity:0;transition:opacity .9s ease}
+.hero-expand-video.on{opacity:1}
+.hero-expand-scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(18,16,14,.62) 0%,rgba(18,16,14,.05) 55%)}
+.hero-expand-cap{position:absolute;bottom:1rem;inset-inline-start:1.1rem;margin:0;font-size:.72rem;letter-spacing:.1em;
+  color:rgba(245,241,232,.8);opacity:calc(1 - var(--hx)*1.6)}
+@media (max-width:639px){.hero-expand-media{aspect-ratio:calc(16 - 5*var(--hx)) / 11}}
+@media (prefers-reduced-motion:reduce){
+  .hero-expand-media{width:min(760px,92vw) !important;border-radius:26px !important;aspect-ratio:16/8 !important}
+}
+
+/* ---------- book section: warm ripple shader ----------
+   Ported from 21st.dev's Warmth Ripple technique (zero-dependency WebGL
+   plasma shader) and retinted from its demo red/amber to this site's own
+   locked char/bronze/sand palette. Same capability gating as the hero 3D. */
+.book-wrap{position:relative;isolation:isolate;overflow:hidden}
+#bookshader{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;
+            transition:opacity 1.4s ease;pointer-events:none;z-index:0}
+#bookshader.on{opacity:.55}
+.book-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(120% 90% at 20% 15%,rgba(34,31,27,.35) 0%,rgba(34,31,27,.78) 60%,rgba(34,31,27,.94) 100%)}
+
+/* ---------- interior showcase: 3D tilt-on-scroll ----------
+   Ported from Aceternity/21st.dev's Container Scroll Animation technique:
+   scroll progress through the section drives rotateX + scale so the card
+   settles flat into place, real dimensional motion rather than a fade. */
+.showcase-stage{perspective:1500px;padding:2.5rem 1rem 4.5rem}
+.showcase-card{max-width:1040px;margin:0 auto;border-radius:26px;overflow:hidden;
+  box-shadow:0 30px 70px -22px rgba(34,31,27,.4);transform-origin:50% 100%;
+  transform:rotateX(var(--sx,16deg)) scale(var(--ss,.93));will-change:transform}
+.showcase-card img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover}
+@media (max-width:639px){.showcase-stage{perspective:900px;padding:1.75rem .5rem 3rem}}
+@media (prefers-reduced-motion:reduce){.showcase-card{transform:none !important}}
+
 /* ---------- rating stars ---------- */
 .stars{display:inline-flex;gap:.06em;direction:ltr;unicode-bidi:isolate;color:#8C6A3F}
 
-/* ---------- before / after slider ---------- */
-.ba{position:relative;overflow:hidden;background:#E4DED1;touch-action:pan-y;cursor:ew-resize;
-    -webkit-user-select:none;user-select:none}
-.ba img{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none;-webkit-user-drag:none}
-.ba .ba-after{position:absolute;inset:0}
-/* "before" sits on top, desaturated, clipped away as the handle moves */
-/* "before" occupies the reading-start side of the handle: left in LTR, right in RTL,
-   so it lines up with its own label and gets wiped away as the handle travels. */
-.ba .ba-before{position:absolute;inset:0;filter:grayscale(1) contrast(.95) brightness(1.03);
-               clip-path:inset(0 calc(100% - var(--p,50%)) 0 0)}
-html[dir="rtl"] .ba .ba-before{clip-path:inset(0 0 0 calc(100% - var(--p,50%)))}
-.ba-handle{position:absolute;top:0;bottom:0;width:2px;background:rgba(245,241,232,.92);
-           box-shadow:0 0 0 1px rgba(34,31,27,.2);left:var(--p,50%);transform:translateX(-1px);pointer-events:none}
-html[dir="rtl"] .ba-handle{left:auto;right:var(--p,50%);transform:translateX(1px)}
-.ba-grip{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2.3rem;height:2.3rem;border-radius:9999px;
-         background:#F5F1E8;box-shadow:0 2px 10px rgba(34,31,27,.26);display:flex;align-items:center;justify-content:center;color:#23201C}
-.ba-lab{position:absolute;bottom:.6rem;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
-        padding:.2rem .5rem;background:rgba(34,31,27,.66);color:#F5F1E8;backdrop-filter:blur(3px);pointer-events:none}
-html[dir="rtl"] .ba-lab-b{right:.6rem}
-html[dir="rtl"] .ba-lab-a{left:.6rem}
-html[dir="ltr"] .ba-lab-b{left:.6rem}
-html[dir="ltr"] .ba-lab-a{right:.6rem}
+/* ---------- before / after: grayscale-to-colour hover/tap reveal ----------
+   One photo (the result). Grayscale at rest; a slow, deliberate colour
+   crossfade on hover (fine pointers) or scroll-into-view/tap (touch). No
+   slider, no drag, no visible Before/After labels — the interaction IS the
+   content, per design_learnings' before/after spec. */
+.ba{position:relative;overflow:hidden;background:#E4DED1}
+.ba img{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none;-webkit-user-drag:none;
+        filter:grayscale(1) contrast(.97) brightness(1.02);
+        transition:filter 1.15s cubic-bezier(.22,.61,.36,1),transform 1.15s cubic-bezier(.22,.61,.36,1)}
+.ba:hover img,.ba:focus-visible img,.ba.ba-seen img{filter:grayscale(0) contrast(1) brightness(1);transform:scale(1.015)}
+@media (hover:none){ .ba:active img{filter:grayscale(0) contrast(1) brightness(1)} }
+.ba-veil{position:absolute;inset:0;background:linear-gradient(to top,rgba(34,31,27,.28),transparent 45%);
+         pointer-events:none;opacity:1;transition:opacity 1.1s ease}
+.ba:hover .ba-veil,.ba:focus-visible .ba-veil,.ba.ba-seen .ba-veil{opacity:0}
+.ba-hint{position:absolute;bottom:.7rem;inset-inline-start:.7rem;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+        padding:.22rem .55rem;background:rgba(34,31,27,.6);color:#F5F1E8;backdrop-filter:blur(3px);pointer-events:none;
+        opacity:1;transition:opacity .6s ease}
+.ba:hover .ba-hint,.ba:focus-visible .ba-hint,.ba.ba-seen .ba-hint{opacity:0}
 
 /* ---------- forms ---------- */
 .field{width:100%;background:transparent;border:0;border-bottom:1px solid #D8D0C0;padding:.7rem .1rem;
@@ -311,7 +409,6 @@ h1,h2,h3,p,li,a,span{overflow-wrap:anywhere}
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
     <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
     <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
-    <symbol id="i-drag" viewBox="0 0 24 24"><path d="m9.5 8-4 4 4 4M14.5 8l4 4-4 4"/></symbol>
   </defs>
 </svg>
 
@@ -420,6 +517,24 @@ h1,h2,h3,p,li,a,span{overflow-wrap:anywhere}
         </a>
       </div>
     </div>
+
+    <!-- scroll-expansion video: real clinic footage, starts as a small framed
+         card and expands to a wide band as the visitor scrolls past the hero.
+         Ported from 21st.dev's Scroll Media Expansion Hero technique (scroll
+         progress -> interpolated width/radius/scale), kept as its own gated
+         layer so the ambient Three.js scene above and this stay one hero
+         moment instead of two competing effects. -->
+    <div class="hero-expand" id="heroExpand">
+      <div class="hero-expand-media" id="heroExpandMedia">
+        <img class="hero-expand-poster" id="heroExpandPoster" src="images/clinic-tour-poster.webp" alt="" aria-hidden="true" loading="eager" decoding="async">
+        <video id="heroVid" class="hero-expand-video" muted loop playsinline preload="none" aria-hidden="true" poster="images/clinic-tour-poster.webp"></video>
+        <div class="hero-expand-scrim"></div>
+        <p class="hero-expand-cap">
+          <span lang-ar>من تصوير المجمع نفسه — لا صور مخزنة</span>
+          <span lang-en>Filmed by the clinic itself — not stock</span>
+        </p>
+      </div>
+    </div>
   </div>
 
   <!-- department strip -->
@@ -492,16 +607,17 @@ h1,h2,h3,p,li,a,span{overflow-wrap:anywhere}
       </p>
     </div>
 
-    <div class="mt-12 sm:mt-16 grid gap-px bg-line border hair">
+    <div class="dept-grid mt-12 sm:mt-16 grid gap-px bg-line border hair">
 
       <!-- dentistry -->
       <article id="dept-dental" class="bg-paper p-7 sm:p-10 lg:p-12 reveal">
         <div class="lg:grid lg:grid-cols-12 lg:gap-x-14">
           <div class="lg:col-span-4">
-            <div class="flex items-baseline gap-3">
-              <span class="num text-[.8rem] text-bronze">01</span>
-              <svg class="icon text-[1.6rem] text-bronze"><use href="#i-tooth"></use></svg>
+            <div class="dept-head">
+              <span class="dept-num">01<span class="dept-num-of">／04</span></span>
+              <svg class="icon dept-icon"><use href="#i-tooth"></use></svg>
             </div>
+            <div class="dept-rule"></div>
             <h3 class="display mt-4 text-[1.5rem] sm:text-[1.85rem] text-ink">
               <span lang-ar>الأسنان</span><span lang-en>Dentistry</span>
             </h3>
@@ -546,10 +662,11 @@ h1,h2,h3,p,li,a,span{overflow-wrap:anywhere}
       <article id="dept-derm" class="bg-paper p-7 sm:p-10 lg:p-12 reveal">
         <div class="lg:grid lg:grid-cols-12 lg:gap-x-14">
           <div class="lg:col-span-4">
-            <div class="flex items-baseline gap-3">
-              <span class="num text-[.8rem] text-bronze">02</span>
-              <svg class="icon text-[1.6rem] text-bronze"><use href="#i-derm"></use></svg>
+            <div class="dept-head">
+              <span class="dept-num">02<span class="dept-num-of">／04</span></span>
+              <svg class="icon dept-icon"><use href="#i-derm"></use></svg>
             </div>
+            <div class="dept-rule"></div>
             <h3 class="display mt-4 text-[1.5rem] sm:text-[1.85rem] text-ink">
               <span lang-ar>الجلدية والتجميل</span><span lang-en>Dermatology &amp; aesthetics</span>
             </h3>
@@ -593,10 +710,11 @@ h1,h2,h3,p,li,a,span{overflow-wrap:anywhere}
       <article id="dept-laser" class="bg-paper p-7 sm:p-10 lg:p-12 reveal">
         <div class="lg:grid lg:grid-cols-12 lg:gap-x-14">
           <div class="lg:col-span-4">
-            <div class="flex items-baseline gap-3">
-              <span class="num text-[.8rem] text-bronze">03</span>
-              <svg class="icon text-[1.6rem] text-bronze"><use href="#i-laser"></use></svg>
+            <div class="dept-head">
+              <span class="dept-num">03<span class="dept-num-of">／04</span></span>
+              <svg class="icon dept-icon"><use href="#i-laser"></use></svg>
             </div>
+            <div class="dept-rule"></div>
             <h3 class="display mt-4 text-[1.5rem] sm:text-[1.85rem] text-ink">
               <span lang-ar>الليزر</span><span lang-en>Laser</span>
             </h3>
@@ -636,10 +754,11 @@ h1,h2,h3,p,li,a,span{overflow-wrap:anywhere}
       <article id="dept-surgery" class="bg-paper p-7 sm:p-10 lg:p-12 reveal">
         <div class="lg:grid lg:grid-cols-12 lg:gap-x-14">
           <div class="lg:col-span-4">
-            <div class="flex items-baseline gap-3">
-              <span class="num text-[.8rem] text-bronze">04</span>
-              <svg class="icon text-[1.6rem] text-bronze"><use href="#i-scalpel"></use></svg>
+            <div class="dept-head">
+              <span class="dept-num">04<span class="dept-num-of">／04</span></span>
+              <svg class="icon dept-icon"><use href="#i-scalpel"></use></svg>
             </div>
+            <div class="dept-rule"></div>
             <h3 class="display mt-4 text-[1.5rem] sm:text-[1.85rem] text-ink">
               <span lang-ar>جراحة التجميل</span><span lang-en>Cosmetic surgery</span>
             </h3>
@@ -666,6 +785,22 @@ h1,h2,h3,p,li,a,span{overflow-wrap:anywhere}
         </div>
       </article>
 
+    </div>
+  </div>
+</section>
+
+<!-- ======================= INTERIOR SHOWCASE (3D scroll) ======================= -->
+<section id="showcase" class="bg-cream border-t hair" style="overflow:hidden">
+  <div class="max-w-shell mx-auto px-5 sm:px-8 pt-16 sm:pt-20 text-center">
+    <p class="eyebrow reveal"><span lang-ar>من الداخل</span><span lang-en>From inside</span></p>
+    <h2 class="display mt-4 text-[1.9rem] sm:text-[2.6rem] lg:text-[3rem] text-ink reveal">
+      <span lang-ar>غرفة علاج حقيقية،<br>لا صورة مخزّنة.</span>
+      <span lang-en>A real treatment room,<br>not a stock photo.</span>
+    </h2>
+  </div>
+  <div class="showcase-stage" id="showcaseStage">
+    <div class="showcase-card" id="showcaseCard">
+      <img src="images/clinic-treatment.webp" alt="" width="1200" height="800" loading="lazy" decoding="async">
     </div>
   </div>
 </section>
@@ -829,10 +964,10 @@ h1,h2,h3,p,li,a,span{overflow-wrap:anywhere}
         </h2>
       </div>
       <p class="lg:col-span-5 mt-6 lg:mt-0 text-[.98rem] leading-[1.95] text-muted reveal">
-        <span lang-ar>اسحب الحدّ الفاصل لترى النتيجة. الصورة قبل العلاج تظهر بلا ألوان، وتستعيد لونها كاملاً
-        كلما كشفت «بعد». كل الحالات منشورة أصلاً من حساب المجمع نفسه.</span>
-        <span lang-en>Drag the divider to reveal the result. The before image is desaturated and returns to
-        full colour as you uncover the after. Every case here was published by the clinic itself.</span>
+        <span lang-ar>كل صورة نتيجة تظهر بلا ألوان — مرّر عليها أو المسها لتستعيد لونها كاملاً. كل الحالات
+        منشورة أصلاً من حساب المجمع نفسه.</span>
+        <span lang-en>Every result photo starts desaturated — hover or tap it to bring the colour back.
+        Every case here was published by the clinic itself.</span>
       </p>
     </div>
 
@@ -1136,8 +1271,10 @@ h1,h2,h3,p,li,a,span{overflow-wrap:anywhere}
   </div>
 </section>
 <!-- =============================== BOOKING =============================== -->
-<section id="book" class="dark bg-char text-cream">
-  <div class="max-w-shell mx-auto px-5 sm:px-8 py-16 sm:py-24">
+<section id="book" class="dark bg-char text-cream book-wrap">
+  <canvas id="bookshader" aria-hidden="true"></canvas>
+  <div class="book-scrim" aria-hidden="true"></div>
+  <div class="relative z-[2] max-w-shell mx-auto px-5 sm:px-8 py-16 sm:py-24">
 
     <div class="lg:grid lg:grid-cols-12 lg:gap-x-16">
       <div class="lg:col-span-4">
@@ -1522,12 +1659,10 @@ h1,h2,h3,p,li,a,span{overflow-wrap:anywhere}
     var c = CASES[i];
     html +=
       '<figure class="case" data-dept="' + c.d + '">' +
-        '<div class="ba aspect-[758/436]" role="group" tabindex="0" aria-label="' + c.ar + ' — اسحب للمقارنة بين قبل وبعد">' +
-          '<img class="ba-after" src="images/' + c.s + '-after.webp" alt="بعد العلاج — ' + c.ar + '" width="758" height="436" loading="lazy" decoding="async">' +
-          '<img class="ba-before" src="images/' + c.s + '-before.webp" alt="قبل العلاج — ' + c.ar + '" width="758" height="436" loading="lazy" decoding="async">' +
-          '<span class="ba-lab ba-lab-b"><span lang-ar>قبل</span><span lang-en>Before</span></span>' +
-          '<span class="ba-lab ba-lab-a"><span lang-ar>بعد</span><span lang-en>After</span></span>' +
-          '<span class="ba-handle"><span class="ba-grip"><svg class="icon text-[1.05rem]"><use href="#i-drag"></use></svg></span></span>' +
+        '<div class="ba aspect-[758/436]" tabindex="0" aria-label="' + c.ar + ' — مرّر أو المس لرؤية النتيجة بالألوان">' +
+          '<img src="images/' + c.s + '-after.webp" alt="نتيجة العلاج — ' + c.ar + '" width="758" height="436" loading="lazy" decoding="async">' +
+          '<span class="ba-veil"></span>' +
+          '<span class="ba-hint"><span lang-ar>مرّر لرؤية النتيجة</span><span lang-en>Hover to reveal</span></span>' +
         '</div>' +
         '<figcaption class="mt-3.5">' +
           '<p class="text-[.98rem] text-ink"><span lang-ar>' + c.ar + '</span><span lang-en>' + c.en + '</span></p>' +
@@ -1537,38 +1672,21 @@ h1,h2,h3,p,li,a,span{overflow-wrap:anywhere}
   }
   grid.innerHTML = html;
 
-  /* ---- before/after drag: "before" is grayscale and gets wiped away ---- */
-  function wireBA(el) {
-    var p = 50;
-    function set(v) {
-      p = Math.max(0, Math.min(100, v));
-      el.style.setProperty("--p", p + "%");
-    }
-    function fromEvent(e) {
-      var r = el.getBoundingClientRect();
-      var x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
-      var pct = (x / r.width) * 100;
-      // in RTL the clip is measured from the right edge
-      set(HTML.getAttribute("dir") === "rtl" ? 100 - pct : pct);
-    }
-    var dragging = false;
-    el.addEventListener("pointerdown", function (e) { dragging = true; el.setPointerCapture(e.pointerId); fromEvent(e); });
-    el.addEventListener("pointermove", function (e) { if (dragging) fromEvent(e); });
-    el.addEventListener("pointerup",   function () { dragging = false; });
-    el.addEventListener("pointercancel", function () { dragging = false; });
-    el.addEventListener("pointerleave",  function () { dragging = false; });
-    // hover scrub on precise pointers, keyboard on focus
-    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-      el.addEventListener("mousemove", function (e) { if (!dragging) fromEvent(e); });
-      el.addEventListener("mouseleave", function () { set(50); });
-    }
-    el.addEventListener("keydown", function (e) {
-      if (e.key === "ArrowLeft")  { set(p + (HTML.getAttribute("dir") === "rtl" ? 6 : -6)); e.preventDefault(); }
-      if (e.key === "ArrowRight") { set(p + (HTML.getAttribute("dir") === "rtl" ? -6 : 6)); e.preventDefault(); }
+  /* ---- before/after: grayscale -> colour on hover (desktop) or
+     scroll-into-view (mobile, no hover available). A tap is also covered by
+     the CSS :active fallback above for devices that never fire IntersectionObserver. ---- */
+  if ("IntersectionObserver" in window) {
+    var baIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) en.target.classList.add("ba-seen");
+      });
+    }, { threshold: 0.55 });
+    [].slice.call(grid.querySelectorAll(".ba")).forEach(function (el) {
+      // only auto-reveal-on-scroll for touch/coarse pointers — fine-pointer
+      // devices keep the deliberate hover-to-reveal interaction.
+      if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) baIO.observe(el);
     });
-    set(50);
   }
-  [].slice.call(grid.querySelectorAll(".ba")).forEach(wireBA);
 
   /* ---------------------------------------------------------- filtering */
   var chips = [].slice.call(document.querySelectorAll(".cf"));
@@ -1927,6 +2045,73 @@ h1,h2,h3,p,li,a,span{overflow-wrap:anywhere}
   }
 
   /* =====================================================================
+     5b. HERO SCROLL-EXPANSION VIDEO — same real clinic footage, ported
+         from 21st.dev's Scroll Media Expansion Hero: scroll position drives
+         a CSS custom property (--hx, 0..1) that the stylesheet maps to
+         width/border-radius/aspect-ratio, so a small framed card grows into
+         a full-bleed band as the visitor scrolls past the hero. Gated the
+         same way as the 3D hero — skipped on reduced-motion/Save-Data, and
+         the video itself only requested once the card nears the viewport.
+     ===================================================================== */
+  var heroVid = document.getElementById("heroVid"), heroExpandEl = document.getElementById("heroExpand");
+  if (heroVid && !saveData && !reduced && "IntersectionObserver" in window) {
+    var hvio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) { if (!heroVid.paused) heroVid.pause(); return; }
+        if (!heroVid.src) {
+          heroVid.src = "media/clinic-tour.mp4";
+          heroVid.addEventListener("playing", function () { heroVid.classList.add("on"); }, { once: true });
+        }
+        var pr = heroVid.play();
+        if (pr && pr.catch) pr.catch(function () { /* autoplay refused — poster stays */ });
+      });
+    }, { rootMargin: "200px 0px" });
+    hvio.observe(heroExpandEl);
+  }
+  if (heroExpandEl && !reduced) {
+    var hxTicking = false;
+    function updateHeroExpand() {
+      hxTicking = false;
+      var r = heroExpandEl.getBoundingClientRect();
+      var vh = window.innerHeight;
+      var startY = vh * 0.88, endY = vh * -0.15;
+      var p = (startY - r.top) / (startY - endY);
+      p = Math.max(0, Math.min(1, p));
+      heroExpandEl.style.setProperty("--hx", p.toFixed(4));
+    }
+    window.addEventListener("scroll", function () {
+      if (!hxTicking) { hxTicking = true; requestAnimationFrame(updateHeroExpand); }
+    }, { passive: true });
+    window.addEventListener("resize", function () { requestAnimationFrame(updateHeroExpand); }, { passive: true });
+    updateHeroExpand();
+  }
+
+  /* =====================================================================
+     5c. INTERIOR SHOWCASE — 3D tilt-on-scroll (Container Scroll Animation
+         technique). Scroll progress through the stage drives rotateX/scale
+         via a CSS custom property, same pattern as the hero video above.
+     ===================================================================== */
+  var showcaseStage = document.getElementById("showcaseStage");
+  if (showcaseStage && !reduced) {
+    var scTicking = false;
+    function updateShowcase() {
+      scTicking = false;
+      var r = showcaseStage.getBoundingClientRect();
+      var vh = window.innerHeight;
+      var startY = vh * 0.95, endY = vh * 0.3;
+      var p = (startY - r.top) / (startY - endY);
+      p = Math.max(0, Math.min(1, p));
+      showcaseStage.style.setProperty("--sx", (16 - 16 * p).toFixed(2) + "deg");
+      showcaseStage.style.setProperty("--ss", (0.93 + 0.07 * p).toFixed(4));
+    }
+    window.addEventListener("scroll", function () {
+      if (!scTicking) { scTicking = true; requestAnimationFrame(updateShowcase); }
+    }, { passive: true });
+    window.addEventListener("resize", function () { requestAnimationFrame(updateShowcase); }, { passive: true });
+    updateShowcase();
+  }
+
+  /* =====================================================================
      6. SCROLL MOTION (GSAP + ScrollTrigger)
      ===================================================================== */
   function initMotion() {
@@ -1978,15 +2163,15 @@ h1,h2,h3,p,li,a,span{overflow-wrap:anywhere}
   }, 2500);
 
   /* =====================================================================
-     7. HERO — real WebGL, lazily imported and gated on device capability.
-        The static image underneath is always painted first and only fades
-        out once the scene is actually rendering.
+     7. GPU CAPABILITY GATE — shared by the hero 3D scene and the book-section
+        shader. The static fallback underneath each is always painted first
+        and only fades out once its scene is actually rendering.
      ===================================================================== */
-  function heroCapable() {
+  function gpuCapable() {
     if (reduced || saveData) return false;
     if (navigator.deviceMemory && navigator.deviceMemory < 4) return false;
     if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 3) return false;
-    /* don't pull a 3D library down a slow connection */
+    /* don't pull WebGL work down a slow connection */
     var et = navigator.connection && navigator.connection.effectiveType;
     if (et && (et === "slow-2g" || et === "2g" || et === "3g")) return false;
     try {
@@ -1996,7 +2181,7 @@ h1,h2,h3,p,li,a,span{overflow-wrap:anywhere}
   }
 
   function initHero() {
-    if (!heroCapable()) return;
+    if (!gpuCapable()) return;
     import("./vendor/three.module.min.js").then(function (THREE) {
       var canvas = document.getElementById("hero3d");
       var still  = document.getElementById("herostill");
@@ -2112,6 +2297,104 @@ h1,h2,h3,p,li,a,span{overflow-wrap:anywhere}
   }
   if ("requestIdleCallback" in window) requestIdleCallback(initHero, { timeout: 2500 });
   else window.addEventListener("load", function () { setTimeout(initHero, 400); });
+
+  /* =====================================================================
+     8. BOOK-SECTION SHADER — real WebGL plasma/ripple background, ported
+        from 21st.dev's Warmth Ripple (raw GLSL, zero-dependency) and
+        retinted from its demo red/amber to this site's own char/bronze/sand.
+        Same gate as the hero, plus an IntersectionObserver so the raf loop
+        only runs while the section is actually on screen.
+     ===================================================================== */
+  function initBookShader() {
+    if (!gpuCapable()) return;
+    var canvas = document.getElementById("bookshader");
+    if (!canvas) return;
+    var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+    if (!gl) return;
+
+    var vsSrc = "attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}";
+    var fsSrc =
+      "precision highp float;" +
+      "uniform vec2 uRes;uniform float uTime;" +
+      /* locked palette: char #221F1B, bronze #8C6A3F, sand #C8B08A, cream #F5F1E8 */
+      "const vec3 cChar  = vec3(0.1333,0.1216,0.1059);" +
+      "const vec3 cBronze= vec3(0.5490,0.4157,0.2471);" +
+      "const vec3 cSand  = vec3(0.7843,0.6902,0.5412);" +
+      "const vec3 cCream = vec3(0.9608,0.9451,0.9098);" +
+      "float ripple(vec2 uv, float t){" +
+      "  float w = 0.0;" +
+      "  w += sin((uv.x*3.1 + uv.y*1.7) + t*0.35) * 0.5;" +
+      "  w += sin((uv.x*-2.3 + uv.y*2.9) + t*0.52) * 0.35;" +
+      "  w += sin(length(uv - vec2(0.65,0.4))*6.0 - t*0.8) * 0.4;" +
+      "  w += sin(length(uv - vec2(0.15,0.75))*5.0 - t*0.6) * 0.3;" +
+      "  return w;" +
+      "}" +
+      "void main(){" +
+      "  vec2 uv = gl_FragCoord.xy / uRes.xy;" +
+      "  vec2 auv = vec2(uv.x * (uRes.x/uRes.y), uv.y);" +
+      "  float w = ripple(auv, uTime);" +
+      "  float band = smoothstep(-0.2, 1.0, w);" +
+      "  vec3 col = mix(cChar, cBronze, clamp(band, 0.0, 1.0));" +
+      "  col = mix(col, cSand, clamp(band - 0.55, 0.0, 1.0) * 0.7);" +
+      "  col = mix(col, cCream, clamp(band - 0.92, 0.0, 1.0) * 0.6);" +
+      "  gl_FragColor = vec4(col, 1.0);" +
+      "}";
+
+    function compile(type, src) {
+      var s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { gl.deleteShader(s); return null; }
+      return s;
+    }
+    var vs = compile(gl.VERTEX_SHADER, vsSrc);
+    var fs = compile(gl.FRAGMENT_SHADER, fsSrc);
+    if (!vs || !fs) return;
+    var prog = gl.createProgram();
+    gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+    gl.useProgram(prog);
+
+    var quad = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+    var pLoc = gl.getAttribLocation(prog, "p");
+    gl.enableVertexAttribArray(pLoc);
+    gl.vertexAttribPointer(pLoc, 2, gl.FLOAT, false, 0, 0);
+
+    var uRes = gl.getUniformLocation(prog, "uRes");
+    var uTime = gl.getUniformLocation(prog, "uTime");
+
+    function resize() {
+      var host = canvas.parentNode;
+      var w = host.clientWidth, h = host.clientHeight;
+      if (!w || !h) return;
+      var dpr = Math.min(window.devicePixelRatio || 1, 1.4);
+      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+    resize();
+    window.addEventListener("resize", resize, { passive: true });
+
+    var running = false, started = false, t0 = performance.now();
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (en) { running = en[0].isIntersecting; }, { threshold: 0.02 })
+        .observe(canvas.parentNode);
+    } else { running = true; }
+
+    function frame(now) {
+      requestAnimationFrame(frame);
+      if (!running) return;
+      var t = (now - t0) / 1000;
+      gl.uniform2f(uRes, canvas.width, canvas.height);
+      gl.uniform1f(uTime, t);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      if (!started) { started = true; canvas.classList.add("on"); }
+    }
+    requestAnimationFrame(frame);
+  }
+  if ("requestIdleCallback" in window) requestIdleCallback(initBookShader, { timeout: 3000 });
+  else window.addEventListener("load", function () { setTimeout(initBookShader, 600); });
 
 })();
 </script>

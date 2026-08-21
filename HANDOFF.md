@@ -18,6 +18,158 @@ Snapchat `dpraxisclinics` · [Facebook](https://www.facebook.com/p/Dpraxis-Beaut
 
 ---
 
+## v3 — typography, hero, motion, before/after (2026-08-21)
+
+Aymean scored v2 6/10: competent but flat. `benchmark/design_learnings_multispecialty-clinic.md`'s
+"Font + 3D decision" addendum named the two specific gaps — font pairing and 3D/motion effort —
+and this pass is scoped to exactly that plus the before/after interaction, which the same file
+flagged as built wrong (a drag slider instead of a hover/tap grayscale reveal). Scope stayed
+inside the single `index.html` convention throughout — no framework, no CDN script tags. All new
+CSS is hand-written into the second `<style>` block rather than new Tailwind utility classes, so
+**`python build.py` was not needed this session** (verified: no new bracket-notation utility
+classes were added to the markup, only pre-existing ones).
+
+### 1. Typography — Fraunces added as the display face
+Per the steal-list's single strongest signal (4 of 6 reference sites pair a serif display face
+with a clean sans body). Self-hosted the same variable-opsz-axis Fraunces files this agency's own
+site already uses (`agency-site/node_modules/@fontsource-variable/fraunces/files/`, copied — not
+re-downloaded — into `fonts/`): `fraunces-latin-opsz-normal.woff2` +
+`fraunces-latin-ext-opsz-normal.woff2` (+ the two italic cuts for the kicker). Wired with the
+exact same pattern as `agency-site/src/index.css`: `font-optical-sizing:auto`,
+`font-variation-settings:"opsz" …` tuned up further at headline sizes, gated to `[dir="ltr"] .display`
+only — Arabic stays on IBM Plex Sans Arabic at 700 weight, per the addendum's own instruction (no
+Arabic cut exists for Fraunces). `.kicker` runs Fraunces italic in **both** language modes because
+its text (`Where Beauty Meets Precision`) is already Latin-only regardless of the active language.
+The hero `<h1>` specifically got its own size ramp (`#top h1.display`, 2.55rem → 6.3rem across
+breakpoints) — the sitewide `.display` utility sizes read as "clean" rather than "premium" at true
+hero scale; Aventura/Clinique 7 both run hero type near full-viewport-height letterforms and the
+old size didn't get near that register. Verified live: Fraunces' real stroke-contrast ball
+terminals render correctly in EN mode; AR mode correctly stays on IBM Plex Sans Arabic bold.
+
+### 2. Hero — real scroll-expansion video + kept the 3D ambient scene as a secondary layer
+Added a new element below the hero copy: the real `media/clinic-tour.mp4` footage in a small
+rounded card (`min(620px,84vw)`) that grows toward full shell width as the visitor scrolls, via a
+CSS custom property (`--hx`, 0→1) driven by a scroll listener computing progress from the card's
+own `getBoundingClientRect()` — ported from 21st.dev's **Scroll Media Expansion Hero**
+(`@arunachalam/scroll-expansion-hero`). The component's Component.tsx tab is gated behind
+in-page interaction that WebFetch cannot reach (confirmed — only the Usage.tsx demo snippet is
+fetchable), so the scroll-progress-driven interpolation was hand-built rather than literally
+copied; same underlying technique (scroll position → interpolated size/radius), not an improvised
+unrelated effect. The existing Three.js fins-and-rings scene stays as the ambient background layer
+behind the hero headline, unchanged — the two now read as one hero moment (abstract ambient motion
+behind the copy, real footage breaking through below it) rather than two competing effects.
+Gating: video `src` only requested when the card nears the viewport (same `IntersectionObserver`
+pattern as the existing `#inside` video), skipped entirely on Save-Data/reduced-motion; the `--hx`
+scroll-math loop is skipped on `prefers-reduced-motion:reduce`, and a CSS fallback under that same
+media query pins the card at its resting size so nothing is left half-expanded.
+**Bug caught and fixed during iteration:** the first version centered the card with
+`position:relative;left:50%;transform:translateX(-50%)`, which only centers relative to the
+viewport for *absolutely* positioned elements — for a `position:relative` block it shifts from the
+element's own static position instead, so in RTL the card sat pinned to the right edge rather than
+centered. Fixed by switching to real block centering (`margin:0 auto`, width computed against
+`100%` of the parent rather than `100vw`).
+
+### 3. Interior showcase — new section, real 3D tilt-on-scroll
+Added a section between Departments and Inside showcasing `images/clinic-treatment.webp` (a real,
+previously-unused clinic photo) with a scroll-driven `rotateX` + `scale` tilt, ported from
+Aceternity/21st.dev's **Container Scroll Animation** (`@manuarora700/container-scroll-animation`)
+technique — scroll progress through the section drives the card from a tilted-back resting state
+to flat-and-full-scale, the same underlying mechanism as the well-known open-source component
+(exact Component.tsx also not fetchable for the same SPA-tab-gating reason; rebuilt the documented
+rotateX/scale-on-scroll-progress technique directly). Skipped on `prefers-reduced-motion`.
+
+### 4. `#book` section — real WebGL shader background
+Added a hand-written raw-GLSL ripple/plasma shader (`#bookshader`, no Three.js, no dependency),
+ported from 21st.dev's **Warmth Ripple** (`@serafimcloud/warmth-ripple`) technique and retinted
+from its demo red/amber palette to this site's own locked char/bronze/sand/cream values. Sits
+behind the booking flow at low opacity with a scrim for text contrast — decorative only, the
+booking flow's own markup/logic was not touched (out of scope this pass). Shares the same
+`gpuCapable()` gate as the hero 3D (renamed from `heroCapable()` since it's now used by both),
+plus its own `IntersectionObserver` so the render loop only runs while the section is on screen.
+Spline (`@serafimcloud/splite`) was considered for a third 3D moment but **deliberately not
+used**: its `<spline-viewer>` web component requires loading a script from an external CDN
+(unpkg/jsdelivr), which breaks this build's own "no CDN tag ships" rule (see v2 §3) — not a time
+shortcut, a real constraint. Background Paths was skipped as redundant once the shader already
+filled the dark-section motion-accent role.
+
+### 5. Before/after — rebuilt from a drag slider to the spec'd hover/tap grayscale reveal
+v2 shipped a draggable divider, which `design_learnings`' before/after section explicitly says is
+wrong. Rebuilt per spec: each of the 27 real cases now shows only the **after** (result) photo,
+`grayscale(1)` at rest, animating to `grayscale(0)` with a `1.15s` filter transition on
+`:hover`/`:focus-visible` (desktop) or on scroll-into-view for touch/coarse-pointer devices (an
+`IntersectionObserver` at 55% threshold adds a `.ba-seen` class, only wired up for pointers that
+fail the `(hover:hover) and (pointer:fine)` media query, so desktop keeps the deliberate
+hover-to-reveal and touch gets scroll-triggered reveal) — plus a CSS `:active` fallback for any
+device that supports neither hover nor `IntersectionObserver`. Removed: the `.ba-handle`/`.ba-grip`
+drag markup, the `#i-drag` SVG symbol, the `pointerdown`/`pointermove`/keyboard-arrow drag JS, the
+visible "Before"/"After" labels, and the "Drag the divider…" copy in both languages (replaced with
+"hover/tap to reveal" copy). Doctor credit and treatment-category metadata per case is unchanged.
+Verified programmatically (Playwright): `filter` reads `grayscale(1)` at rest, `grayscale(0)`
+mid-hover, and back to `grayscale(1)` on mouse-leave — the reveal is a hover state, not a permanent
+toggle, on fine-pointer devices as specified.
+
+### 6. Departments — numbered rail upgraded from a corner tag to a structural device
+Per the steal list's second-strongest device (Aventura/Clinique 7/Dr Grigoriak numbered
+sequences). Numerals went from `text-[.8rem]` corner tags to `clamp(2.5rem,5.5vw,4.25rem)`
+Fraunces-on-LTR/IBM-Plex-Serif-on-RTL numerals with a `／04` fraction suffix (echoing Aventura's
+"01-06" rail), plus a continuous bronze connecting spine (`.dept-grid::before`, desktop only)
+running top-to-bottom through all four department blocks at the numeral column's x-position. Real
+4 departments used, not padded to a round number — the clinic genuinely has 4 (dentistry,
+dermatology/aesthetics, laser, cosmetic-surgery-by-consultation) and the surgery entry's honest
+"by consultation" framing was left untouched.
+
+### Iteration record (screenshots via a throwaway Playwright script — the Browser pane's
+screenshot compositor was intermittently unavailable this session, matching the known issue noted
+in the brief)
+- **Hero, round 1:** built the scroll-expansion video + kept 3D scene. Screenshot showed the video
+  card pinned to the right edge (RTL) instead of centered, and the headline reading merely "clean"
+  next to Aventura/Clinique 7 screenshots at the same viewport width — their display type runs
+  roughly 2× the size ours did.
+- **Round 2:** bumped `#top h1.display` to a dedicated size ramp (2.55rem→6.3rem), added
+  box-shadow/rounded-corner polish and more top margin to the video card. Screenshot showed the
+  headline now reading at real editorial confidence — but the video card was still off-center.
+- **Round 3:** found and fixed the `left:50%`/`position:relative` centering bug (see §2 above).
+  Re-shot in EN mode specifically to confirm Fraunces was actually rendering (it was — visible
+  ball-terminal stroke contrast on the headline) and that the real video frame (not just the
+  poster) loads and plays inside the expanding card.
+- **Round 4:** tightened bottom spacing so the card doesn't crowd the department strip below it;
+  confirmed no horizontal overflow and no console errors at 375/768/1440/1920px.
+- **Departments, round 1:** built the numeral rail; already read close to the Aventura/Clinique 7
+  register on first pass.
+- **Round 2:** enlarged the icon (1.55rem→1.9rem, thicker stroke) since the giant serif numeral
+  made the original thin small icon look mismatched in weight next to it.
+- **Rounds 3–4:** verified at mobile width (rail correctly hidden below `lg:`, no overflow) and
+  re-confirmed against the EN screenshot alongside the hero fixes — no further changes needed.
+- **Cases (before/after), round 1:** built the hover/tap grayscale rebuild; grid read correctly
+  desaturated with the hint label.
+- **Round 2:** added a subtle `scale(1.015)` + veil-fade on reveal so the color transition reads as
+  a deliberate "coming into focus" moment rather than a flat filter flip.
+- **Round 3:** verified real hover behavior programmatically (grayscale 1→0→1 across
+  hover/hover/mouse-leave) rather than trusting the CSS by inspection alone.
+- **Round 4:** verified the mobile scroll-reveal path separately — cases scrolled past during a
+  full-page pass correctly kept their `.ba-seen` class (color stays revealed once scrolled into
+  view, matching "scroll-into-view" not "in-view-only").
+
+### QA — run for real this session, all passing
+- **Responsive sweep** at 375/768/1440/1920px (Playwright): `scrollWidth === innerWidth` at every
+  width, 0 console/page errors.
+- **Bidirectional AR/EN lang-leak sweep**, same method as v2: 0 leaked `[lang-en]` nodes in AR
+  mode, 0 leaked `[lang-ar]` nodes in EN mode, 315 lang-tagged nodes visible on each side
+  (symmetric).
+- **Capability gating, verified live (not just asserted) for every new heavy element:**
+  - `prefers-reduced-motion:reduce`: `#hero3d` never activates, `#bookshader` never activates,
+    `#heroVid.src` and `#clinicvid.src` both stay unset, and `.reveal` content computes
+    `opacity:1` (nothing left invisible).
+  - Simulated low-end device (`navigator.deviceMemory=2`, `hardwareConcurrency=2`):
+    `#hero3d`/`#bookshader` never activate, `#herostill` (the static fallback) stays on screen.
+  - Both new elements reuse the renamed shared `gpuCapable()` gate (was `heroCapable()`) rather
+    than duplicating the device/connection checks.
+- **Before/after:** hover-to-reveal confirmed on desktop via Playwright (`filter` transitions
+  grayscale↔color on hover/mouse-leave); scroll-into-view reveal confirmed on a 375px viewport via
+  a full-page scroll pass (cases keep `.ba-seen` once scrolled past, matching spec).
+
+---
+
 ## v2 — what changed vs the 6/10 version (2026-08-20)
 
 Aymean reviewed v1 live and scored it 6/10: competent but flat. Everything below is an
