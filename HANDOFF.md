@@ -18,6 +18,181 @@ Snapchat `dpraxisclinics` · [Facebook](https://www.facebook.com/p/Dpraxis-Beaut
 
 ---
 
+## v4 — reference-driven visual polish pass (2026-08-21)
+
+Scope was fixed in advance: typography, the video/3D hero, scroll motion, and the
+before/after treatment. Booking, reviews and doctors were left alone for their own pass.
+Still one self-contained `index.html` — no framework, no CDN tag ships (CLAUDE.md).
+
+### 0. The 21st.dev component sources — what actually happened
+
+The brief said to open each component's link and read the full `Component.tsx` tab, on the
+basis that these are public pages. **They are not, any more.** Every `Component.tsx` tab on
+21st.dev now renders *"Component source is locked — Unlock to view the full implementation.
+Members get unlimited access; free accounts get a few unlocks each day"* behind a padlock,
+and clicking it opens a "Create your free account" modal. Verified directly by driving the
+real page (screenshot kept at `scratchpad/shots/21st-comp-tab.png` during the session).
+Creating an account was not on the table, so the v3 session's claim that only the Usage tab
+is reachable was correct — but its conclusion (hand-build the effect anyway) was not the
+only option.
+
+**What was done instead: went to each component's genuine upstream, all of which are public.**
+That is strictly better than reading 21st.dev's copy — these are the canonical originals:
+
+| Library entry | Real source used | How |
+|---|---|---|
+| Container Scroll Animation | Aceternity's own public shadcn registry, `ui.aceternity.com/registry/container-scroll-animation.json` | Full `container-scroll-animation.tsx` recovered verbatim |
+| Warmth Ripple | `paper-design/shaders` → `packages/shaders/src/shaders/warp.ts` (Apache-2.0) — the library behind the 21st.dev Shader Builder that generated it | Full GLSL recovered |
+| Liquid Metal | same repo, `liquid-metal.ts` (30 KB of real GLSL) | Fetched and read; **not shipped** — see §4 |
+| Background Paths | `kokonutui.com/r/background-paths.json` | Fetched; **not shipped** — see §4 |
+| Spline Scene embed | pattern only | See §3 for why no Spline scene ships |
+
+### 1. Hero — rebuilt as a split field with seam-crossing display type
+**Compared against: Aventura Dental Arts (hero) + Sky Clinics (department-split copy).**
+
+Aventura's hero is a hard vertical split — flat light field on one side, full-bleed clinical
+footage on the other — with the display headline ranged *into* the seam so its last words land
+on the footage in white italic, and the footage then growing to full bleed on scroll. That last
+part is the same thing 21st.dev's Scroll Media Expansion Hero does; Aventura ships it natively.
+So the two asks collapse into one move, and that is what the hero now is.
+
+- The real `media/clinic-tour.mp4` is the inline-end half of the split, expanding to full bleed
+  across a 200vh sticky stage. One driver, `--hx` (0→1), runs the panel width, the copy fade,
+  and the overline reveal.
+- Headline: `Four departments. / Ten specialists. / One standard of **precision.**` — the last
+  two words in cream Fraunces italic, sitting on the footage. The split point is a grid column
+  that terminates exactly on the seam, so the italic half is on the video at every viewport
+  width rather than depending on luck. RTL mirrors it (`ومعيارٌ واحد / للدقّة.`).
+- Sky Clinics' device added underneath: the four departments each get a one-line promise rather
+  than a bare label row.
+- The old pale-slab Three.js hero scene was removed — none of the six approved sites put 3D in
+  the hero, and it was reading as muddy beige boxes. That effort moved to §3.
+
+**Round 1 → round 4 progression (each round: screenshot ours, screenshot Aventura, name gaps, fix):**
+- **R1:** split + expansion working, but the crossing word was cream-on-near-white and
+  unreadable, the copy left a 3% ghost over the cream sliver mid-scroll, and the footage was a
+  bright gray wall where Aventura's is dark and high-contrast.
+- **R2:** found a real bug by measuring against the reference — percentage padding resolves
+  against the *containing block*, so the copy side's `46%` was 46% of the 1240px shell while the
+  media's `46%` was 46% of the viewport. The seam was silently split in two, ~120px apart.
+  Moved every seam offset to `vw`. Also: media graded (`contrast 1.1 / saturate .82 /
+  brightness .72`), scrim doubled with a seam-edge gradient, copy fade sharpened to `1 - hx*3.1`,
+  text-shadow on the crossing word, bottom corners anchored (address + footage provenance) the
+  way Aventura anchors both of its corners.
+- **R3:** the split line's first grid column was `54vw` wide but started *after* the page pad,
+  so it ended one pad-width past the seam and pushed `of` / `واحد` onto the footage as
+  dark-on-dark — fixed to `calc(54vw - var(--hpad) - .2em)`. Headline scale retuned (the longest
+  line was wrapping and eating a whole line of vertical budget). Corner block became a single
+  bottom rule after it collided with the copy in both directions.
+- **R4:** the address rule was rendering 6px below the fold — the section's own `pt-86px` was
+  stacking on top of a `100svh` sticky and pushing its bottom past the viewport. Removed it and
+  gave the copy its own nav clearance, which also lets the footage run to y=0 like Aventura's.
+  That exposed a regression — dark nav links now sat on dark video — so the nav is opaque from
+  the start instead of only after 40px of scroll.
+
+### 2. Departments — numbered rail on a near-black ground
+**Compared against: Clinique 7's 01–06 services rail + Aventura's numbered technology showcase.**
+
+Was a flat light card-grid that read as a spec sheet. Now Aventura's rail: near-black warm ground
+(`#151310`, sand/bronze accents — warm-dark, not cold gray, per design_learnings' note on Dr
+Grigoriak's warm-brown-on-black recipe), structural numerals with a `／04` fraction, treatment
+lists as hairline rows with a `↗` corner arrow instead of a bulleted checklist, and a pinned
+index column where the department in view carries the highlight. Moving this section dark also
+gives the page the light/near-black scroll rhythm Clinique 7 alternates between.
+
+**R1 → R4:** R1 rebuilt dark with the rail + index. R2 fixed `04` breaking across two lines in
+the index and pinned the identity column, which had been leaving a dead ~300px well under every
+department name. R3 hoisted each department's "See N cases" link into that column so it carries
+content down its height, and swapped the CSS-border corner mark (it rendered as a caret, not a
+diagonal). R4 caught that `\2197` in a Python heredoc had been eaten as an **octal escape**
+(`\21` = 0x11), shipping a control character plus the literal `97` — replaced with real glyphs —
+and restored the column to 4/6 after 3/7 forced the department names to wrap.
+
+### 3. The 3D moment — its own section, self-hosted
+**Compared against: LAVA Dental Studio + Dr Grigoriak (warm-dark, restrained motion).**
+
+New `#standard` section built on the **splite** entry's *pattern* — dark card, split layout with
+copy on one half and the 3D on the other, a spotlight cone over the field, and the scene mounted
+lazily rather than on page load.
+
+**No Spline community scene ships, deliberately.** Two reasons, both hard: `<spline-viewer>` needs
+an external CDN tag, which CLAUDE.md forbids in what ships; and a community scene is a stranger's
+3D asset, which runs against this build's real-content rule for a client demo. The 3D is our own
+self-hosted Three.js instead — a single brushed-bronze torus knot on warm black, one material
+studied and lit, motion slow enough to read as still. The old hero scene's budget went here.
+
+Bug caught in QA: the stage collapsed to 0×0 and the scene was rendering into a zero-size canvas —
+both its children are absolutely positioned, so `margin-inline:auto` made the grid item
+shrink-to-fit nothing. Fixed with an explicit `width:100%`. Then the camera was pulled back and the
+knot shrunk so the form sits inside its frame with air rather than cropping against the mask.
+
+### 4. Shader — the real Warp GLSL
+**Compared against: LAVA Dental + Dr Grigoriak.**
+
+The v3 shader was four stacked sines — improvised. Replaced with a step-for-step port of
+paper-design's `warp.ts`: their `t = 0.0625 * (time + 118)` first-frame offset, `n1/n2` value
+noise, `angle = n1 * TWO_PI` then `uv += 4*distortion*n2*(cos,sin)(angle)`, the iterative swirl
+loop, their "stripes" base pattern, and their per-stop softness/step colour mixing. Two
+adaptations, both documented in the source comment: their randomiser samples a shipped noise
+texture (replaced with a hash value-noise so nothing extra has to ship), and their `fwidth()`
+antialias term needs `OES_standard_derivatives` on WebGL1 (a small constant here). Palette is our
+locked char/bronze/sand/cream in place of their `#160B0B/#C2402A/#F49D37/#FFE8C2` — same warm-dark
+family, tuned toward warm brown rather than terracotta red. Opacity dropped `.55 → .4` and the
+scrim strengthened so it reads as material under the copy, not as the subject.
+
+**Liquid Metal and Background Paths were fetched and read but not shipped** — the section already
+had its motion accent, and a second shader would have been decoration rather than a decision.
+
+### 5. Before/after — exactly the spec'd interaction
+**Compared against: Clinique 7's "Simply *Sculpted*" rail.**
+
+Grayscale at rest → full colour on hover (fine pointers) or scroll-into-view/tap (coarse
+pointers), animated `filter` transition over 1.15s. No slider, no drag. **Removed the 27 identical
+"Hover to reveal" badges** — Clinique 7 states the interaction *once* for the whole rail and leaves
+every photo clean; that is now a single small-caps line above the filters. Grid staggers (Clinique
+7's cards sit at different vertical offsets, which is most of why theirs reads as a spread and a
+3-up grid reads as a catalogue), cards got a 14px radius, and the rest state was re-graded — it had
+`contrast(.97)`, i.e. contrast pulled *down*, which read as a faded photo rather than a deliberate
+black-and-white. Now `grayscale(1) contrast(1.14) brightness(.94)`.
+
+Verified programmatically, per tile: rest `grayscale(1)` → hover `grayscale(0)` → leave
+`grayscale(1)`, veil `1 → 0 → 1`, and `.ba-hint` count = 0. (Note for future QA: headless Chromium
+applies `:hover` styling but `Element.matches(':hover')` returns false, so assert on
+`getComputedStyle`, not on `matches`.)
+
+### 6. Typography — Fraunces put to work
+Fraunces was already self-hosted from v3 but was only doing headline duty. Added the device that
+4 of the 6 approved sites actually win on and that we were not using anywhere: **Clinique 7's
+heading accent** — a clean roman first line with a much larger serif-italic second line stepped
+down and inward (`We love / *your face*`, `Simply / *Sculpted*`). Applied as `.h-accent` to the
+departments, showcase, cases and standard headings. LTR gets real Fraunces italic at
+`opsz 72`; RTL has no italic cut for Arabic, so it takes the same step-in plus a sand/bronze tint —
+the hierarchy reads, the mechanism differs. Fraunces stays gated to `[dir="ltr"]` throughout.
+
+### 7. QA — what was actually run
+
+- **Lang-leak sweep, bidirectional, 3 viewports** (390 / 768 / 1440, AR and EN, scrolling the full
+  page so lazy content mounts): **0 leaks, 0px horizontal overflow, 0 console errors** in all six
+  combinations.
+- **Mobile bugs found and fixed:** the hero stacked footage-first, pushing the headline below the
+  fold — copy now leads via flex `order`; and `.hl-split` is only a grid at ≥1024px, so below that
+  the two halves ran together with no word space (`واحدللدقّة` / `ofprecision`) — fixed with a
+  generated space.
+- **Fallbacks, verified by simulation, not assumed:**
+  - low-end device (`deviceMemory 2` / 2 cores) → three.js **not requested** (saves 655 KB),
+    3D canvas stays off, static still visible
+  - `Save-Data` on → three.js **and** the hero video both skipped
+  - `prefers-reduced-motion` → both skipped, `--hx` pinned at 0, showcase `transform: none`
+- **Payload:** 870 KB / 14 requests above the fold (index.html 210 KB — nginx gzips `text/html`
+  by default, so ~35 KB on the wire; video 153 KB; fonts ~230 KB). Full-page-scrolled worst case
+  2.4 MB, dominated by the 40+ lazy case/doctor photos.
+- **Frame rate** (SwiftShader software GL in headless — a floor, not a phone-accurate number; a
+  real GPU is far faster): mobile 60/60/60 fps idle / 3D / shader. Desktop 60 / 57 / 49.
+  The shader's backing store is now capped at 0.85 DPR under 700px and 1.15 above, since it is a
+  soft gradient field that does not need the pixels. Hero scroll handler: 200 steps in ~1 ms.
+
+---
+
 ## v3 — typography, hero, motion, before/after (2026-08-21)
 
 Aymean scored v2 6/10: competent but flat. `benchmark/design_learnings_multispecialty-clinic.md`'s
