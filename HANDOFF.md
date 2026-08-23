@@ -18,6 +18,44 @@ Snapchat `dpraxisclinics` · [Facebook](https://www.facebook.com/p/Dpraxis-Beaut
 
 ---
 
+## v8 — Doctors section reverted to its pre-accordion layout (2026-08-23)
+
+**The client asked for the image-accordion hover effect on `#team` to go.** That one section is
+back to exactly how it stood in v4 (`8d8eeb6`) — its markup is byte-identical to that commit's.
+Removed with it: the ten-panel accordion strip, its hover/swipe hint line, the whole `.dacc*`
+CSS block, the `#team article[id]{scroll-margin-top:7rem}` rule, and the `id="dr-*"` anchors the
+accordion links pointed at. No dead code left behind (`grep dacc` → 0 hits, no `#team` CSS rules
+remain). The ten doctor cards themselves are untouched — same photos, bios, credentials, IG
+handles and per-doctor Google ratings — back to the plain 1 / 2 / 3-column grid.
+
+**Nothing else was reverted.** Everything from v5 onward stands exactly as it was: the
+background-video hero, the two deleted sections (`#showcase`, `#standard`), the Testimonials
+Columns effect on the reviews, and the Interactive Hover Button on the five scoped buttons. The
+v5 notes below are kept for history — §"3. Doctors — Tailwind Image Accordion" now describes an
+effect that is no longer in the build.
+
+Tailwind was re-purged after the cut, which dropped the one utility (`sm:mt-14`) the accordion
+was the only user of.
+
+### QA re-run after the revert
+
+375 / 768 / 1440 widths, Arabic and English both ways:
+
+- doctor grid falls to 1 / 2 / 3 columns as it did in v4; `h3` spacing back to `sm:mt-16` (64px)
+- all ten doctor photos load (640×640, none broken), card heights even across each row
+- no horizontal overflow at any of the three widths
+- lang-leak sweep both directions: 306 opposite-language nodes, 0 visible leaks, 0 wrongly
+  hidden same-language nodes — clean in AR→EN and EN→AR
+- no console errors; no CSS class collision — the removed classes were all `.dacc*`-prefixed and
+  the reverted markup only uses utilities the rest of the page already uses
+- the untouched sections verified live: hero video playing, `tcol-scroll` review columns still
+  animating, five `.ihb` buttons, four booking steps, `#showcase`/`#standard` still absent
+
+Measured from the live page (computed layout, geometry and network), not screenshots — the
+preview pane could not composite frames this session.
+
+---
+
 ## v6 — live Google Calendar booking added alongside the WhatsApp flow (2026-08-23)
 
 **STUBBED — waiting on Aymean's real link. The block does not render yet.**
@@ -165,6 +203,9 @@ an option either — that hero used the same mechanism.**
   dropped from the deploy whenever you want the weight back.
 
 ### 3. Doctors — Tailwind Image Accordion
+
+> **REVERTED 2026-08-23 (v8) — this accordion is no longer in the build.**
+> Kept below for history only; see the v8 note at the top of this file.
 
 Added above the existing doctor cards; **no real content was removed** — the ten detailed
 bios, credentials, IG handles and per-doctor Google ratings all stay. The accordion is the
