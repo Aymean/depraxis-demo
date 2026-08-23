@@ -18,6 +18,96 @@ Snapchat `dpraxisclinics` · [Facebook](https://www.facebook.com/p/Dpraxis-Beaut
 
 ---
 
+## v6 — live Google Calendar booking added alongside the WhatsApp flow (2026-08-23)
+
+**STUBBED — waiting on Aymean's real link. The block does not render yet.**
+
+### The one-line change when the link arrives
+
+`index.html`, in the script block near the top (search for `GCAL_BOOKING_URL`):
+
+```js
+var GCAL_BOOKING_URL = ""; // <- paste the link between the quotes
+```
+
+Paste it, save, done. Nothing else to touch — the block switches itself on, picks
+embed-or-button by itself, and the copy is already written in both languages.
+
+**Which of Google's two links to paste.** The Share dialog on an appointment schedule
+offers both, and they are not equivalent — verified against Google's live responses on
+2026-08-23:
+
+| Link | Header Google sends | What our code does |
+|---|---|---|
+| `calendar.google.com/calendar/appointments/schedules/<id>` (Share → **Embed**) | no `X-Frame-Options` | **embeds it inline** in the page — the better experience |
+| `calendar.app.google/<code>` (the short "booking page" link) | `X-Frame-Options: SAMEORIGIN` | cannot be framed by anyone, so it becomes a button that opens Google in a new tab |
+
+Either works. **Prefer the long one** — it is the only one that can sit inside the page.
+`?gv=true` is appended automatically if it is missing, so don't worry about it.
+
+### What was added
+
+A second, parallel booking path in `#book`, below the existing flow and behind a hairline —
+the three-step WhatsApp flow is untouched and stays the primary route. New markup is
+`#gcalOption` (with `#gcalFrame` / `#gcalFallback` / `#gcalNote`), styling is the
+`.gcal-frame` block in the stylesheet, logic is **JS §4b**.
+
+Google's booking widget is a white, light-themed page we cannot restyle from outside the
+frame — so the frame does the work: the site's own 16px radius, hairline, cream loading
+ground and drop shadow, so it reads as part of the dark booking section rather than a pasted
+widget. Google's own UI inside the frame stays Google's. That is expected.
+
+### The honesty split between the two paths
+
+Deliberate, and the copy says it plainly in both languages:
+
+- **Three-step flow (primary)** — nothing is sent automatically; the visitor sends the
+  WhatsApp message themselves and the appointment is not booked until reception replies.
+- **Live calendar (secondary)** — Google writes the booking straight onto the clinic's
+  calendar and emails the confirmation, no reception step. The copy claims instant
+  confirmation *only* on this path, because only on this path is it true.
+
+The secondary block also points visitors back to the primary flow if they want to ask
+something first or none of the offered times work.
+
+### Detection — checked, not assumed
+
+Cross-origin JS cannot read a response header, and cannot tell a framed page from a refused
+one (a blocked frame still fires `load`). So the routing is done on URL form, and that form
+was checked against Google's live headers rather than guessed — see the table above. On top
+of that a watchdog swaps the embed for the button if the frame has not loaded at all after
+8s (offline, Google down, or Google changing the header later).
+
+### Tested this session — all three branches, for real
+
+- **Empty config (what ships):** `#gcalOption` stays hidden, zero Google iframes on the
+  page, no dead `href="#"` link rendered. Confirmed on the live page.
+- **Embeddable link:** tested against the real `calendar.google.com/.../appointments/
+  schedules/...?gv=true` endpoint with a syntactically valid but non-existent id. Google's
+  page really did render inside our card (it says "Appointment not found", which is the
+  correct response for a fake id — the point was that framing is not refused). `?gv=true`
+  appended automatically; fallback and note stayed hidden; the 8s watchdog did **not** fire,
+  confirming the frame genuinely loaded. Shot at 390 / 768 / 1440.
+- **Short link:** `calendar.app.google/...` correctly skipped the iframe entirely and
+  rendered the button plus its note instead. Shot at 390 and 1440.
+- **Watchdog:** exercised by pointing the frame at a non-routable host so `load` never
+  fires. Polled from t=0 — iframe present at 1.0s, gone and replaced by the button at 4.1s.
+- One bug found and fixed on the way: Tailwind's `inline-flex` utility outranks a bare
+  `[hidden]` in the cascade, so the fallback button would have shown *underneath* a working
+  embed. The three states are now gated on id specificity
+  (`#gcalFallback[hidden]{display:none}`) so they are genuinely exclusive.
+- Bidirectional AR/EN sweep over the new block: clean, both directions. No horizontal
+  overflow at 390 / 768 / 1440. Primary flow re-driven end to end afterwards
+  (department → day → slot → Next → summary → Back) — unaffected.
+
+### Note
+
+The account behind the link is Aymean's own for now; it moves to the clinic's Google account
+once they are a paying client. Swapping it is the same one-line change — the code does not
+care whose calendar it is.
+
+---
+
 ## v5 — hero fix, two sections cut, three 21st.dev effects ported (2026-08-23)
 
 A fixed, fully-specified list. Nothing outside it was touched. Still one self-contained
