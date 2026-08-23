@@ -56,93 +56,107 @@ preview pane could not composite frames this session.
 
 ---
 
-## v6 — live Google Calendar booking added alongside the WhatsApp flow (2026-08-23)
+## v7 — the booking form itself writes straight onto the calendar; v6 reverted (2026-08-23)
 
-**STUBBED — waiting on Aymean's real link. The block does not render yet.**
+**v6 (below) was the wrong shape and was reverted wholesale** (`git checkout` of the pre-v6
+commit) — it added a *second, parallel* booking path (Google's own Appointment Schedule
+widget, embedded or linked, sitting beside the existing form). Aymean's actual ask: keep the
+one form that's already there, make its own submit write directly onto the calendar, and
+keep WhatsApp only as a secondary option — not a second competing flow. `_preview-calendar.html`
+(a throwaway demo of the v6 widget) was deleted; it was never meant to ship.
 
-### The one-line change when the link arrives
+**STUBBED — waiting on Aymean to deploy the bridge script and paste one URL. Ships as
+WhatsApp-only, byte-identical to pre-v6, until then.**
 
-`index.html`, in the script block near the top (search for `GCAL_BOOKING_URL`):
+### What was actually built
 
-```js
-var GCAL_BOOKING_URL = ""; // <- paste the link between the quotes
-```
+The existing 3-step form (department → day/time → name/mobile) is unchanged. What changes is
+what submit *does*:
 
-Paste it, save, done. Nothing else to touch — the block switches itself on, picks
-embed-or-button by itself, and the copy is already written in both languages.
+- **`BOOKING_API_URL` empty (what ships today):** exactly the old behavior — Next opens
+  WhatsApp with the request pre-written, "not booked yet" copy, personal add-to-calendar
+  reminder. Verified byte-for-byte identical to the pre-v6 build (same WhatsApp message
+  text, same flow) via a scripted run through the whole form.
+- **`BOOKING_API_URL` set:** this becomes the *default* path, not a second option —
+  - Step 2's time slots are checked live against the real calendar (`fetchBusyTimes`, a GET
+    to the URL with `?date=`) and busy hours are disabled before the visitor ever sees them.
+  - Submitting step 3 POSTs the booking to the same URL. On success the appointment is
+    **actually on the calendar already** — step 4 shows the honest confirmed-booking copy
+    (`#step4direct`) instead of the "not booked yet" copy, with a WhatsApp link underneath
+    for anyone who still wants to ask something or change it.
+  - If the slot was taken between the availability check and the submit (a real race, however
+    rare), the API returns `{ok:false}` and the visitor is sent back to step 2 with a "just
+    taken, pick another" message and a re-fetched availability list — no half-booked state.
+  - If the API is unreachable at all (network blip, bad URL), the submit **falls back to the
+    exact old WhatsApp flow** rather than losing the request or showing a dead end —
+    `#step4wa`, the honest "not booked yet" copy.
+  - A **"Prefer WhatsApp instead?" link** (`#waAltBtn`) sits under the submit button whenever
+    the API is configured, for anyone who'd rather ask something first — it skips the API
+    entirely and goes straight to the same WhatsApp path.
+  - Heading, intro copy, the step-2 note and the submit button's own label all switch to
+    calendar-appropriate wording the moment the API is configured (`applyBookingMode()`,
+    called once at load) — nothing reads "WhatsApp" as the default action once it's live.
+  - The personal "add to your calendar" reminder button (pre-existing, unrelated to this)
+    is untouched either way — it was always just a reminder for the visitor's own calendar,
+    true regardless of which path actually booked the appointment.
 
-**Which of Google's two links to paste.** The Share dialog on an appointment schedule
-offers both, and they are not equivalent — verified against Google's live responses on
-2026-08-23:
+### The one-time setup Aymean needs to do (his Google account, his OAuth — Claude can't do
+this part; it needs to run under his own login)
 
-| Link | Header Google sends | What our code does |
-|---|---|---|
-| `calendar.google.com/calendar/appointments/schedules/<id>` (Share → **Embed**) | no `X-Frame-Options` | **embeds it inline** in the page — the better experience |
-| `calendar.app.google/<code>` (the short "booking page" link) | `X-Frame-Options: SAMEORIGIN` | cannot be framed by anyone, so it becomes a button that opens Google in a new tab |
+1. **Create a calendar just for this** (not his personal one) — Google Calendar → Settings →
+   "Add calendar" → "Create new calendar" → e.g. "De Praxes — Bookings". Open its settings →
+   "Integrate calendar" → copy the **Calendar ID** (looks like
+   `abc123...@group.calendar.google.com`).
+2. **Create the bridge script** — go to script.google.com → New project → delete the
+   placeholder code → paste in `demos-depraxis/booking-apps-script.gs` (in this folder) →
+   fill in `CALENDAR_ID` at the top with what you copied in step 1.
+3. **Deploy it** — Deploy → New deployment → type **Web app** → Execute as **Me** → Who has
+   access **Anyone** → Deploy → authorize it when Google asks (it's your own script asking
+   for permission to touch your own calendar) → copy the URL ending in `/exec`.
+4. **Paste that URL** into `index.html`, `var BOOKING_API_URL = "";` near the top of the
+   script block — paste it between the quotes. Save. Nothing else to touch.
 
-Either works. **Prefer the long one** — it is the only one that can sit inside the page.
-`?gv=true` is appended automatically if it is missing, so don't worry about it.
+Free (Apps Script's free quota is 20,000 requests/day — far more than a clinic needs), no
+server to host or maintain, and it's Google's own infrastructure end to end.
 
-### What was added
+### Tested this session (with a mocked bridge, since no real deployment exists yet)
 
-A second, parallel booking path in `#book`, below the existing flow and behind a hairline —
-the three-step WhatsApp flow is untouched and stays the primary route. New markup is
-`#gcalOption` (with `#gcalFrame` / `#gcalFallback` / `#gcalNote`), styling is the
-`.gcal-frame` block in the stylesheet, logic is **JS §4b**.
+- **Default/unconfigured path:** scripted a full run (department → day → slot → details →
+  submit) and confirmed it's identical to the pre-v6 build — same WhatsApp message text
+  byte-for-byte, `#step4wa` shown, `#step4direct` hidden, personal-reminder link unaffected.
+- **Live-mode copy swap:** with a URL set, confirmed the heading, intro, step-2 note, submit
+  label and form note all switch to the calendar-aware wording, and `#waAltBtn` un-hides.
+- **Real availability check:** mocked the GET to return one busy hour; confirmed exactly that
+  slot renders `disabled` with `data-taken="1"`, every other hour stays clickable.
+- **Successful booking:** mocked the POST to return `{ok:true}`; confirmed WhatsApp is
+  **not** opened, `#step4direct` shows, `#step4wa` stays hidden, the add-to-calendar link
+  carries the confirmed-booking wording, and the POST body carries the right department/date/
+  time/name/phone/note fields.
+- **Slot-taken race:** mocked `{ok:false}`; confirmed the visitor lands back on step 2 with
+  the "just taken" message, submit button re-enabled, no dead-end.
+- **API unreachable:** mocked a rejected fetch; confirmed the honest WhatsApp fallback fires
+  (message opens, `#step4wa` shown) rather than the request silently vanishing.
+- **"Prefer WhatsApp instead?" link:** confirmed it never calls the API at all — it goes
+  straight to the WhatsApp path, bypassing availability/booking entirely.
+- No console errors in any of the above.
 
-Google's booking widget is a white, light-themed page we cannot restyle from outside the
-frame — so the frame does the work: the site's own 16px radius, hairline, cream loading
-ground and drop shadow, so it reads as part of the dark booking section rather than a pasted
-widget. Google's own UI inside the frame stays Google's. That is expected.
+**Not yet tested for real** (can't be, until Aymean deploys the actual script): the genuine
+Apps Script Web App round-trip, cross-origin behavior against the real deployed URL, and
+whatever calendar timezone/DST edge cases only show up against a live Google Calendar. Worth
+a real end-to-end pass the first time a genuine URL is pasted in.
 
-### The honesty split between the two paths
+---
 
-Deliberate, and the copy says it plainly in both languages:
+## v6 — live Google Calendar booking as a second path (2026-08-23) — REVERTED, kept for history only
 
-- **Three-step flow (primary)** — nothing is sent automatically; the visitor sends the
-  WhatsApp message themselves and the appointment is not booked until reception replies.
-- **Live calendar (secondary)** — Google writes the booking straight onto the clinic's
-  calendar and emails the confirmation, no reception step. The copy claims instant
-  confirmation *only* on this path, because only on this path is it true.
+**This whole approach was wrong and was reverted.** Left here only so nobody re-discovers the
+same dead end. See v7 above for what actually shipped instead.
 
-The secondary block also points visitors back to the primary flow if they want to ask
-something first or none of the offered times work.
-
-### Detection — checked, not assumed
-
-Cross-origin JS cannot read a response header, and cannot tell a framed page from a refused
-one (a blocked frame still fires `load`). So the routing is done on URL form, and that form
-was checked against Google's live headers rather than guessed — see the table above. On top
-of that a watchdog swaps the embed for the button if the frame has not loaded at all after
-8s (offline, Google down, or Google changing the header later).
-
-### Tested this session — all three branches, for real
-
-- **Empty config (what ships):** `#gcalOption` stays hidden, zero Google iframes on the
-  page, no dead `href="#"` link rendered. Confirmed on the live page.
-- **Embeddable link:** tested against the real `calendar.google.com/.../appointments/
-  schedules/...?gv=true` endpoint with a syntactically valid but non-existent id. Google's
-  page really did render inside our card (it says "Appointment not found", which is the
-  correct response for a fake id — the point was that framing is not refused). `?gv=true`
-  appended automatically; fallback and note stayed hidden; the 8s watchdog did **not** fire,
-  confirming the frame genuinely loaded. Shot at 390 / 768 / 1440.
-- **Short link:** `calendar.app.google/...` correctly skipped the iframe entirely and
-  rendered the button plus its note instead. Shot at 390 and 1440.
-- **Watchdog:** exercised by pointing the frame at a non-routable host so `load` never
-  fires. Polled from t=0 — iframe present at 1.0s, gone and replaced by the button at 4.1s.
-- One bug found and fixed on the way: Tailwind's `inline-flex` utility outranks a bare
-  `[hidden]` in the cascade, so the fallback button would have shown *underneath* a working
-  embed. The three states are now gated on id specificity
-  (`#gcalFallback[hidden]{display:none}`) so they are genuinely exclusive.
-- Bidirectional AR/EN sweep over the new block: clean, both directions. No horizontal
-  overflow at 390 / 768 / 1440. Primary flow re-driven end to end afterwards
-  (department → day → slot → Next → summary → Back) — unaffected.
-
-### Note
-
-The account behind the link is Aymean's own for now; it moves to the clinic's Google account
-once they are a paying client. Swapping it is the same one-line change — the code does not
-care whose calendar it is.
+Added a second, parallel booking path in `#book`, below the existing three-step flow and
+behind a hairline — an embedded/linked Google Appointment Schedule widget. Aymean's actual
+ask, once clarified, was for the *existing* form's own submit to write to the calendar, with
+WhatsApp staying secondary rather than a second competing flow — not a second widget next to
+the first. The `_preview-calendar.html` file built alongside this to demo it was also removed.
 
 ---
 
