@@ -18,6 +18,151 @@ Snapchat `dpraxisclinics` · [Facebook](https://www.facebook.com/p/Dpraxis-Beaut
 
 ---
 
+## v5 — hero fix, two sections cut, three 21st.dev effects ported (2026-08-23)
+
+A fixed, fully-specified list. Nothing outside it was touched. Still one self-contained
+`index.html`, no framework, no CDN tag.
+
+### Sources — all read from the real public upstreams, not 21st.dev
+
+`benchmark/component_library_21st.md`'s 2026-08-21 note holds: every `Component.tsx` tab on
+21st.dev is behind an account wall. Each effect below was ported from the genuine upstream:
+
+| Effect | Real source fetched | What came back |
+|---|---|---|
+| Interactive Hover Button | `magicui.design/r/interactive-hover-button.json` | Full `.tsx` — the dot / label-out / label-in mechanism verbatim |
+| Tailwind Image Accordion | `ui-layouts.com/r/tailwind-image-accordion.json` | Full `.tsx` — every `group-hover` utility, both pseudo-layers, both stagger delays |
+| Testimonials Columns | 21st.dev usage tab only (`Component.tsx` locked, `ui.efferd.com/r/...` returns 404) | Mask, 740px cap and the 15s/19s/17s column offsets are the source's; the duplicated-track + `translateY(-50%)` loop is the standard technique rebuilt in CSS |
+
+### 1. Hero — scroll-expansion mechanic removed, real background video in its place
+
+The v3/v4 hero tied the footage panel's width to scroll position (`--hx`, a 200vh sticky
+stage). On a phone that collapsed to a static image card with nothing to expand into, and on
+desktop it only paid off once the visitor scrolled. **Reverting to the earlier commit was not
+an option either — that hero used the same mechanism.**
+
+- `media/clinic-tour.mp4` is now simply the field the hero stands on: `autoplay muted loop
+  playsinline`, `src` in the markup, playing from the first frame. No sticky stage, no
+  `--hx`, no seam split. `.hero-stage` / `.hero-sticky` / `.hero-media` / `.hero-overline`
+  and the whole scroll-driver JS block are gone; `.hero-shell` / `.hero-bg` / `.hero-scrim` /
+  `.hero-inner` replace them.
+- Copy, CTAs and the `4.7 · 270 Google reviews` line are unchanged word for word. Only their
+  colours moved to cream/sand, because the ground under them is now footage rather than a
+  flat cream field.
+- Fallbacks: the `<img class="hero-poster">` sits under the video and the video carries its
+  own `poster`, so no frame is ever empty. On Save-Data or `prefers-reduced-motion` the JS
+  strips the `src` and sets `hidden` on the video — the still carries the hero (verified with
+  Chrome's `--force-prefers-reduced-motion`).
+- **Regression caught and fixed in the same pass:** shipping the video in the markup means it
+  can hold `window.load` open on a slow line, and `initMotion()` — which reveals the headline
+  and every `.reveal` — was gated on `load`. A `setTimeout(initMotionOnce, 1200)` fallback now
+  runs alongside it so the copy never waits on the footage.
+
+### 2. Two sections deleted outright
+
+- `#showcase` — "غرفة علاج حقيقية / A real treatment room". Section, its
+  `.showcase-stage`/`.showcase-card` CSS and JS §5c (the Container Scroll port) all removed.
+- `#standard` — "مبنى واحد / One building — no case told twice", the gold twisted-ring 3D.
+  Section, `.std-*`/`#std3d` CSS, the whole `initStandard3D()` Three.js scene and its
+  IntersectionObserver mount all removed. **This closes the open question about swapping that
+  3D for a real Spline scene — it is gone, not replaced.**
+- `gpuCapable()` was shared with the `#book` shader, so it stays (comment updated).
+- Nothing referenced either section: no nav anchor, no JS selector, no footer link. Verified
+  by resolving every `a[href^="#"]` on the live page — zero dangling anchors.
+- Two images fell out of use as a result and were **kept, not deleted**:
+  `images/clinic-treatment.webp` and `images/derm-editorial-1.webp`.
+  `vendor/three.module.min.js` (670 KB) is likewise now unreferenced — kept, but it can be
+  dropped from the deploy whenever you want the weight back.
+
+### 3. Doctors — Tailwind Image Accordion
+
+Added above the existing doctor cards; **no real content was removed** — the ten detailed
+bios, credentials, IG handles and per-doctor Google ratings all stay. The accordion is the
+"ten at a glance" strip, and each panel links to that doctor's full card below (every card
+got an `id`, plus `scroll-margin-top:7rem` so the fixed nav does not cover it).
+
+Ported intact from the ui-layouts source: hovering/focusing one panel expands it while every
+sibling collapses and takes a translucent blur veil (`after`), the panel's own bottom scrim
+fades up (`before`), and the two text lines rise in on the source's 300ms / 500ms stagger
+with its `cubic-bezier(.5,.85,.25,1.8)`. Colours are ours — the veil is cream, not white.
+
+Two ratios changed because this shows ten real doctors, not the source's three demo panels:
+sibling collapse is expressed as `flex-grow` (1 → 5 on the open panel) rather than the
+source's `w-full`/`w-[20%]`, and **below 1024px the row becomes a swipeable snap rail with
+the names already showing** — ten panels stacked into a column is unreadable, and at 768px ten
+of them collapse to ~60px slivers. The hint line under it changes wording with the breakpoint
+(hover vs swipe) so it is never telling a phone to hover.
+
+### 4. Reviews — Testimonials Columns
+
+The static two-up card grid is now auto-scrolling columns: each column holds its set twice and
+runs a linear infinite `translateY(-50%)`, so the second copy lands exactly where the first
+started and the loop never seams. The container keeps the source's own
+`mask-image:linear-gradient(to bottom,transparent,black 25%,black 75%,transparent)` and its
+740px cap. framer-motion's animate/transition became one CSS keyframe.
+
+Same eight real Google reviews, same text, same reviewer names, same dates — Arabic, English
+and French each kept in their own language and direction. **No reviewer photos exist, so none
+were invented**; the source's avatar slot is simply left out. The score panel (4.7, the real
+star distribution, Google's own keyword tags, the Maps link) is untouched.
+
+**Two columns of four, not three of 3/3/2.** With eight reviews a three-column split leaves one
+column holding two cards, whose single copy measured 531px against the 740px band — so that
+column visibly showed the same reviewer twice at once. At four cards each, both copies measure
+~940-960px, comfortably past the band. Durations are the source's 15s and 19s. Second column
+hides below `md`; on a phone it is one column.
+
+### 5. Interactive Hover Button — five buttons, exactly as scoped
+
+The Magic UI mechanism verbatim: a 0.5rem dot scaling ×100.8 until it floods the button, the
+resting label sliding 3rem out and fading, a second label + arrow sliding in — all on the
+source's 300ms `cubic-bezier(.4,0,.2,1)`. Every X translation runs through `--ihb-x` so the
+label leaves and arrives on the correct side in Arabic. One deliberate change: the source lands
+its incoming layer at `-1.25rem` rather than 0; on our tighter square buttons that overshoot
+clipped the label, so it settles centred.
+
+Applied to:
+1. nav `Book a visit` (solid) — matches the rule "every solid/filled Book a visit instance";
+   it was not in the brief's parenthetical list, flagging it here
+2. hero `Book a visit`
+3. sticky mobile CTA bar `احجز / Book` — no hover exists on a phone, so it also fires on
+   `:active`; its dot is hidden at rest (`scale(0)`) since that cell already carries an icon
+4. booking step 2 `Next` (`#to3`)
+5. booking form submit — `أرسل الطلب عبر واتساب / Send the request on WhatsApp`
+
+Confirmed **not** applied (checked on the live page, all false): `#langbtn`, `#menubtn`,
+`[data-cf]` case filters, `[data-dept]` pills, `.bnav-back`, `#wprev`/`#wnext`, `.daybtn`,
+`.slot`, `#bookagain`. The `Book a visit` in `#visit` and in the mobile nav are outlined/text
+links, not solid buttons, so they were left alone too.
+
+### 6. QA run this session
+
+- **Mobile hero verified for real at a true 390×844 viewport** (headless-new clamps windows to
+  500px wide, so the page was rendered inside a 390px iframe to get an honest layout): video
+  `paused:false`, `currentTime` advancing, `opacity:1`, filling 390×844, hero shell exactly
+  `100svh`. Screenshots taken at 390 / 768 / 1440 in both languages.
+- Booking flow driven end to end after the `#to3` rebuild: department → day → slot → Next →
+  step 3 with the correct summary → Back → step 2. Submit stays bound to the form, not the
+  button.
+- All ten accordion links resolve to a real card; zero dangling `#` anchors page-wide.
+- Horizontal overflow scan with `overflow-x` forced visible at 390 / 768 / 1440, both
+  languages: clean. (The `.dacc` rail and the `.ihb-go` layer sit outside their own boxes by
+  design; both are clipped by their own `overflow:hidden`.)
+- Bidirectional AR/EN leak sweep over every visible text node: clean. The only cross-script
+  text left is intentional and pre-existing — the toggle's own `EN`/`عربي` label, the clinic's
+  real English tagline "Where Beauty Meets Precision", the real non-Arabic reviews, and
+  `sr-only` Arabic labels in `#visit`.
+- Console: no errors. Tailwind rebuilt and re-inlined via `build.py`.
+
+### Note for the next pass — not acted on
+
+Cutting `#showcase` and `#standard` flattened the page's light/dark rhythm: `#departments` and
+`#inside` are now two dark sections back to back, and `#tech → #cases → #team → #reviews` is
+four light ones in a row. It reads fine, but if you want the alternation back that is where to
+put anything new.
+
+---
+
 ## v4 — reference-driven visual polish pass (2026-08-21)
 
 Scope was fixed in advance: typography, the video/3D hero, scroll motion, and the
