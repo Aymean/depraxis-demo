@@ -1702,7 +1702,7 @@ html[dir="rtl"] .ihb{--ihb-x:-1}
         </dl>
 
         <div class="mt-9 flex flex-wrap gap-3 reveal">
-          <a href="https://wa.me/966543333657" target="_blank" rel="noopener noreferrer"
+          <a href="https://wa.me/966543333657" data-wa-prefill target="_blank" rel="noopener noreferrer"
              class="inline-flex items-center gap-2.5 bg-ink text-cream px-6 py-3.5 text-[.9rem] hover:bg-bronze transition-colors">
             <svg class="icon text-[1.15rem]"><use href="#i-wa"></use></svg>
             <span lang-ar>راسلنا على واتساب</span><span lang-en>Message us on WhatsApp</span>
@@ -1772,7 +1772,7 @@ html[dir="rtl"] .ihb{--ihb-x:-1}
           <ul class="space-y-2.5 text-cream/70">
             <li><a href="tel:+966543333657" class="ulink hover:text-cream transition-colors"><span class="ltr">054 333 3657</span></a></li>
             <li><a href="tel:+966543333647" class="ulink hover:text-cream transition-colors"><span class="ltr">054 333 3647</span></a></li>
-            <li><a href="https://wa.me/966543333657" target="_blank" rel="noopener noreferrer" class="ulink hover:text-cream transition-colors"><span lang-ar>واتساب</span><span lang-en>WhatsApp</span></a></li>
+            <li><a href="https://wa.me/966543333657" data-wa-prefill target="_blank" rel="noopener noreferrer" class="ulink hover:text-cream transition-colors"><span lang-ar>واتساب</span><span lang-en>WhatsApp</span></a></li>
             <li class="text-cream/45"><span lang-ar>السبت — الخميس <span class="ltr">10:00–22:00</span></span><span lang-en>Sat — Thu <span class="ltr">10:00–22:00</span></span></li>
           </ul>
         </div>
@@ -1791,7 +1791,7 @@ html[dir="rtl"] .ihb{--ihb-x:-1}
 </footer>
 
 <!-- ========================= floating / mobile CTAs ========================= -->
-<a href="https://wa.me/966543333657" target="_blank" rel="noopener noreferrer" id="wabubble"
+<a href="https://wa.me/966543333657" data-wa-prefill target="_blank" rel="noopener noreferrer" id="wabubble"
    class="hidden md:flex fixed bottom-6 end-6 z-40 w-14 h-14 rounded-full bg-ink text-cream items-center justify-center shadow-lg hover:bg-bronze transition-colors"
    aria-label="راسلنا على واتساب">
   <svg class="icon text-[1.6rem]"><use href="#i-wa"></use></svg>
@@ -1802,7 +1802,7 @@ html[dir="rtl"] .ihb{--ihb-x:-1}
     <svg class="icon text-[1.15rem] text-sand"><use href="#i-phone"></use></svg>
     <span lang-ar>اتصال</span><span lang-en>Call</span>
   </a>
-  <a href="https://wa.me/966543333657" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center justify-center gap-1 py-3 text-[.72rem] border-x border-cream/10 active:bg-charsoft">
+  <a href="https://wa.me/966543333657" data-wa-prefill target="_blank" rel="noopener noreferrer" class="flex flex-col items-center justify-center gap-1 py-3 text-[.72rem] border-x border-cream/10 active:bg-charsoft">
     <svg class="icon text-[1.15rem] text-sand"><use href="#i-wa"></use></svg>
     <span lang-ar>واتساب</span><span lang-en>WhatsApp</span>
   </a>
@@ -1984,6 +1984,16 @@ html[dir="rtl"] .ihb{--ihb-x:-1}
   };
   function lang() { return HTML.getAttribute("dir") === "rtl" ? "ar" : "en"; }
 
+  var WA_PREFILL = {
+    ar: "السلام عليكم، تواصلت معكم عبر موقع مجمع دي براكسس الطبي. أرغب بالاستفسار عن المواعيد المتاحة.",
+    en: "Hello, I'm contacting you through the De Praxes Medical Complex website. I'd like to ask about available appointments."
+  };
+  function applyWaPrefill(l) {
+    document.querySelectorAll("[data-wa-prefill]").forEach(function (a) {
+      a.setAttribute("href", "https://wa.me/" + WA + "?text=" + encodeURIComponent(WA_PREFILL[l]));
+    });
+  }
+
   function applyLang(l) {
     HTML.setAttribute("lang", l === "ar" ? "ar" : "en");
     HTML.setAttribute("dir",  l === "ar" ? "rtl" : "ltr");
@@ -1992,6 +2002,7 @@ html[dir="rtl"] .ihb{--ihb-x:-1}
       el.setAttribute("placeholder", el.getAttribute("data-ph-" + l));
     });
     try { localStorage.setItem("dpx-lang", l); } catch (e) {}
+    applyWaPrefill(l);
     renderDays(); renderSlots(); updateSummary();
     [].slice.call(grid.querySelectorAll(".ba")).forEach(function (el) { el.style.setProperty("--p", "50%"); });
   }
