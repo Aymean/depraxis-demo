@@ -1,0 +1,17 @@
+.git
+.gitignore
+.gitattributes
+.assetsignore
+wrangler.jsonc
+CLAIMED.md
+HANDOFF.md
+Dockerfile
+nginx-gzip.conf
+booking-apps-script.gs
+build.py
+tailwind.config.js
+src
+build
+node_modules
+.claude
+.wrangler
