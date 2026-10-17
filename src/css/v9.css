@@ -1,0 +1,144 @@
+
+/* =====================================================================
+   v9 — multi-page components. Same tokens, same type, same warm-dark /
+   cream rhythm as the single page they were cut from.
+   ===================================================================== */
+
+/* ---------- nav: current page ---------- */
+.navlink[aria-current="page"]{color:#23201C;background-size:100% 1px}
+.mnavlink[aria-current="page"]{color:#23201C;font-weight:600}
+.mnavlink[aria-current="page"]::before{content:"";display:inline-block;width:.38rem;height:.38rem;border-radius:9999px;
+  background:#8C6A3F;margin-inline-end:.6rem;vertical-align:.15em}
+
+/* ---------- PAGE HEADER ----------
+   Every inner page opens on the same warm near-black ground as the home
+   hero and the departments rail, so moving between pages reads as one
+   building: a bronze light falling from the top corner, faint vertical
+   slats (the reception's own slatted wood), a breadcrumb, a display h1. */
+.phead{position:relative;isolation:isolate;overflow:hidden;background:#151310;color:#F5F1E8;
+  padding-top:calc(68px + 3rem);padding-bottom:clamp(3.25rem,7vw,6rem)}
+@media (min-width:768px){.phead{padding-top:calc(86px + 4.25rem)}}
+.phead::before{content:"";position:absolute;inset:0;z-index:-2;
+  background:radial-gradient(70% 90% at 88% -10%,rgba(140,106,63,.30),transparent 62%),
+             radial-gradient(45% 70% at 0% 110%,rgba(200,176,138,.08),transparent 70%)}
+html[dir="rtl"] .phead::before{
+  background:radial-gradient(70% 90% at 12% -10%,rgba(140,106,63,.30),transparent 62%),
+             radial-gradient(45% 70% at 100% 110%,rgba(200,176,138,.08),transparent 70%)}
+.phead::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:repeating-linear-gradient(90deg,rgba(245,241,232,.028) 0 1px,transparent 1px 128px);
+  -webkit-mask-image:linear-gradient(to bottom,#000,transparent 85%);mask-image:linear-gradient(to bottom,#000,transparent 85%)}
+.phead h1{font-size:clamp(2.2rem,5.2vw,4.25rem)}
+.phead .h-accent{color:#C8B08A}
+.phead-ghost{position:absolute;z-index:-1;bottom:-.18em;inset-inline-end:-.04em;pointer-events:none;
+  font-family:"IBM Plex Serif",Georgia,serif;font-weight:300;line-height:1;direction:ltr;
+  font-size:clamp(9rem,24vw,21rem);color:rgba(200,176,138,.075);letter-spacing:-.04em}
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:.55rem;font-size:.72rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(245,241,232,.42)}
+html[dir="rtl"] .crumbs{letter-spacing:.04em;font-size:.8rem}
+.crumbs a{transition:color .3s ease}.crumbs a:hover{color:#F5F1E8}
+.crumbs .sep{color:rgba(200,176,138,.5)}
+.crumbs [aria-current]{color:#C8B08A}
+.phead-media{position:relative;overflow:hidden;border-radius:14px;background:#221F1B;aspect-ratio:4/5}
+.phead-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  filter:contrast(1.04) saturate(.86) brightness(.9)}
+.phead-media::after{content:"";position:absolute;inset:0;border-radius:14px;pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(245,241,232,.08);
+  background:linear-gradient(to top,rgba(14,12,10,.5),transparent 42%)}
+.phead-media figcaption{position:absolute;z-index:2;bottom:1rem;inset-inline:1.1rem;font-size:.74rem;color:rgba(245,241,232,.72)}
+.phead-stats{display:flex;flex-wrap:wrap;gap:1.5rem 2.75rem;margin-top:2.75rem;padding-top:1.4rem;border-top:1px solid rgba(245,241,232,.14)}
+.phead-stats dt{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,241,232,.42)}
+html[dir="rtl"] .phead-stats dt{letter-spacing:.04em;font-size:.8rem}
+.phead-stats dd{margin-top:.35rem;font-size:1.6rem;color:#F5F1E8}
+
+/* ---------- link cards (home teasers, cross-links) ---------- */
+.lcard{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:2rem;min-height:14.5rem;
+  padding:1.75rem 1.6rem;border:1px solid #E4DED1;background:#FBF9F4;border-radius:14px;
+  transition:border-color .45s ease,transform .45s cubic-bezier(.22,.61,.36,1),box-shadow .45s ease}
+.lcard:hover,.lcard:focus-visible{border-color:#C8B08A;transform:translateY(-3px);box-shadow:0 22px 40px -32px rgba(35,32,28,.55)}
+.lcard .go{display:inline-flex;align-items:center;gap:.5rem;font-size:.86rem;color:#8C6A3F}
+.lcard .go svg{transition:transform .45s cubic-bezier(.22,.61,.36,1)}
+html[dir="ltr"] .lcard:hover .go svg{transform:translateX(4px)}
+html[dir="rtl"] .lcard:hover .go svg{transform:scaleX(-1) translateX(4px)}
+.dark .lcard{border-color:rgba(245,241,232,.14);background:rgba(245,241,232,.025)}
+.dark .lcard:hover{border-color:rgba(200,176,138,.7);box-shadow:0 22px 40px -30px rgba(0,0,0,.8)}
+.dark .lcard .go{color:#C8B08A}
+.lcard-num{font-family:"IBM Plex Serif",Georgia,serif;font-weight:300;font-size:clamp(2.6rem,4.5vw,3.6rem);line-height:.8;
+  color:#C8B08A;direction:ltr;unicode-bidi:isolate;font-variant-numeric:lining-nums tabular-nums}
+html[dir="ltr"] .lcard-num{font-family:"Fraunces Variable",Georgia,serif;font-variation-settings:"opsz" 60}
+
+/* ---------- service rows (department pages) ---------- */
+.srow{display:grid;grid-template-columns:3rem 1fr;column-gap:1rem;align-items:baseline;
+  padding:1.75rem 0;border-bottom:1px solid #E4DED1}
+@media (min-width:640px){.srow{grid-template-columns:4.5rem 1fr;column-gap:2rem;padding:2.1rem 0}}
+.srow h3{font-size:1.1rem;color:#23201C;line-height:1.5}
+@media (min-width:640px){.srow h3{font-size:1.28rem}}
+.srow p{margin-top:.5rem;font-size:.92rem;line-height:1.9;color:#57514A;max-width:60ch}
+.srow .chips{margin-top:.9rem;display:flex;flex-wrap:wrap;gap:.45rem}
+.chip{display:inline-block;border:1px solid #E4DED1;padding:.28rem .7rem;font-size:.78rem;color:#57514A;border-radius:9999px;white-space:nowrap}
+.dark .chip{border-color:rgba(245,241,232,.16);color:rgba(245,241,232,.7)}
+a.chip{transition:border-color .3s ease,color .3s ease}
+a.chip:hover{border-color:#8C6A3F;color:#23201C}
+.dark a.chip:hover{border-color:#C8B08A;color:#F5F1E8}
+
+/* ---------- group heading inside long pages ---------- */
+.ghead{display:flex;align-items:baseline;gap:1rem;padding-bottom:1rem;border-bottom:1px solid #E4DED1}
+.ghead .gnum{font-family:"IBM Plex Serif",Georgia,serif;font-weight:300;color:#8C6A3F;font-size:.9rem;direction:ltr;unicode-bidi:isolate}
+
+/* ---------- statement / quote ---------- */
+.statement{font-size:clamp(1.2rem,2.3vw,1.75rem);line-height:1.85;color:#23201C}
+html[dir="ltr"] .statement{font-family:"Fraunces Variable",Georgia,serif;font-weight:380;font-optical-sizing:auto;
+  font-variation-settings:"opsz" 36;line-height:1.5}
+.dark .statement{color:#F5F1E8}
+
+/* ---------- mission / vision pair ---------- */
+.mv{border-top:1px solid rgba(245,241,232,.16);padding-top:1.6rem}
+
+/* ---------- machines ---------- */
+.mcard{display:flex;flex-direction:column;border:1px solid #E4DED1;background:#FBF9F4;border-radius:14px;overflow:hidden;
+  transition:border-color .45s ease,box-shadow .45s ease}
+.mcard:hover{border-color:#C8B08A;box-shadow:0 26px 44px -36px rgba(35,32,28,.6)}
+.mfig{position:relative;aspect-ratio:4/3;background:linear-gradient(180deg,#F1EBDF,#E7DFD0);overflow:hidden;
+  display:flex;align-items:center;justify-content:center}
+.mfig img{width:100%;height:100%;object-fit:contain;padding:1.25rem;mix-blend-mode:multiply;
+  transition:transform 1s cubic-bezier(.22,.61,.36,1)}
+.mcard:hover .mfig img{transform:scale(1.035)}
+.mfig .mnum{position:absolute;top:.9rem;inset-inline-start:1rem;font-family:"IBM Plex Serif",Georgia,serif;
+  font-size:.8rem;color:#8C6A3F;direction:ltr;unicode-bidi:isolate;z-index:2}
+/* text-only fallback when no photo is available for a device */
+.mfig--text{background:#151310;align-items:flex-end;justify-content:flex-start;padding:1.4rem 1.3rem}
+.mfig--text::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(80% 90% at 85% 0%,rgba(140,106,63,.32),transparent 65%),
+             repeating-linear-gradient(90deg,rgba(245,241,232,.03) 0 1px,transparent 1px 64px)}
+.mfig--text .mword{position:relative;font-family:"Fraunces Variable","IBM Plex Serif",Georgia,serif;font-weight:380;
+  font-size:clamp(1.9rem,3.4vw,2.5rem);line-height:1;color:#F5F1E8;direction:ltr;letter-spacing:-.01em}
+.mfig--text .mnum{color:#C8B08A}
+.mbody{padding:1.4rem 1.4rem 1.6rem;display:flex;flex-direction:column;gap:.55rem;flex:1}
+.mname{font-family:"Fraunces Variable","IBM Plex Serif",Georgia,serif;font-size:1.32rem;line-height:1.2;color:#23201C}
+
+/* ---------- partners ---------- */
+.pcell{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.1rem;text-align:center;
+  min-height:11.5rem;padding:1.75rem 1.25rem;background:#FBF9F4;transition:background-color .45s ease}
+.pcell:hover{background:#fff}
+.pcell img{max-height:64px;max-width:78%;width:auto;height:auto;object-fit:contain;
+  filter:grayscale(1) contrast(1.05);opacity:.8;transition:filter .6s ease,opacity .6s ease}
+.pcell:hover img{filter:none;opacity:1}
+.pmono{display:flex;align-items:center;justify-content:center;width:4.25rem;height:4.25rem;border-radius:9999px;
+  border:1px solid #C8B08A;color:#8C6A3F;font-family:"Fraunces Variable","IBM Plex Serif",Georgia,serif;font-size:1.5rem}
+.pname{font-size:.9rem;color:#23201C;line-height:1.5}
+
+/* ---------- framed photo ---------- */
+.frame{position:relative;overflow:hidden;border-radius:14px;background:#E4DED1}
+.frame img{display:block;width:100%;height:100%;object-fit:cover}
+.frame::after{content:"";position:absolute;inset:0;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(34,31,27,.08);pointer-events:none}
+
+/* ---------- 404 ---------- */
+.nf-num{font-family:"IBM Plex Serif",Georgia,serif;font-weight:300;font-size:clamp(6rem,18vw,12rem);line-height:.9;color:#C8B08A;direction:ltr}
+
+/* device photo in a page header: show the whole machine, on the PDF's own beige */
+.phead-media--device{background:linear-gradient(180deg,#EFE8DB,#E2D8C6)}
+.phead-media--device img{object-fit:contain;padding:1.75rem 1.5rem 2.75rem;filter:none;mix-blend-mode:multiply}
+.phead-media--device::after{background:linear-gradient(to top,rgba(14,12,10,.55),transparent 22%)}
+
+/* book page: the booking section is the page — clear the fixed nav */
+.book-page > .relative{padding-top:calc(68px + 3rem)}
+@media (min-width:768px){.book-page > .relative{padding-top:calc(86px + 4.25rem)}}

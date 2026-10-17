@@ -1,0 +1,46 @@
+<!-- ================================ NAV ================================ -->
+<header id="nav" class="fixed top-0 inset-x-0 z-50 bg-cream transition-colors duration-500">
+  <div class="max-w-shell mx-auto px-5 sm:px-8">
+    <div class="flex items-center justify-between h-[68px] md:h-[86px] border-b hair transition-colors duration-500" id="navrule">
+
+      <a href="index.html" class="flex items-center shrink-0" aria-label="مجمع دي براكسس الطبي — الرئيسية">
+        <img src="images/logo.webp" alt="شعار مجمع دي براكسس الطبي" width="180" height="64"
+             class="h-9 md:h-11 w-auto mix-blend-multiply" id="navlogo">
+      </a>
+
+      <nav class="hidden xl:flex items-center gap-x-6 text-[.88rem] text-muted" aria-label="التنقل الرئيسي">
+{{DESKNAV}}
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <button type="button" id="langbtn"
+                class="inline-flex items-center gap-1.5 text-[.8rem] text-muted hover:text-ink transition-colors px-1"
+                aria-label="تبديل اللغة">
+          <svg class="icon text-[1rem]"><use href="#i-globe"></use></svg>
+          <span lang-ar>EN</span><span lang-en>عربي</span>
+        </button>
+        <a href="book.html" class="ihb hidden sm:inline-flex items-center justify-center px-5 py-2.5 text-[.85rem]"{{BOOKCUR}}>
+          <span class="ihb-rest">
+            <span class="ihb-dot" aria-hidden="true"></span>
+            <span class="ihb-label"><span lang-ar>احجز موعدك</span><span lang-en>Book a visit</span></span>
+          </span>
+          <span class="ihb-go" aria-hidden="true">
+            <span lang-ar>احجز موعدك</span><span lang-en>Book a visit</span>
+            <svg class="icon text-[1rem] flip"><use href="#i-arrow"></use></svg>
+          </span>
+        </a>
+        <button type="button" id="menubtn" class="xl:hidden p-1.5 -me-1.5 text-ink" aria-expanded="false" aria-controls="mobilenav"
+                aria-label="القائمة">
+          <svg class="icon text-[1.5rem]"><use href="#i-menu"></use></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobilenav" class="xl:hidden hidden bg-cream border-b hair max-h-[calc(100svh-68px)] overflow-y-auto">
+    <nav class="max-w-shell mx-auto px-5 sm:px-8 py-4 grid gap-px text-[.95rem] text-muted" aria-label="التنقل للجوال">
+{{MOBNAV}}
+      <a href="book.html" class="py-2.5 text-bronze"><span lang-ar>احجز موعدك</span><span lang-en>Book a visit</span></a>
+    </nav>
+  </div>
+</header>
