@@ -1,0 +1,14 @@
+// Production deploy into the clinic's own Cloudflare account (dpraxisclinics@gmail.com).
+// Deploy: XDG_CONFIG_HOME=~/.wrangler-dpraxis npx wrangler@4 deploy -c wrangler.dpraxis.jsonc
+{
+  "name": "dpraxis-site",
+  "compatibility_date": "2026-09-09",
+  "assets": {
+    "directory": "./",
+    "not_found_handling": "404-page"
+  },
+  "routes": [
+    { "pattern": "dpraxisclinics.com", "custom_domain": true },
+    { "pattern": "www.dpraxisclinics.com", "custom_domain": true }
+  ]
+}

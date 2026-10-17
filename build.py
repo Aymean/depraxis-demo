@@ -19,7 +19,7 @@ import json, pathlib, re, shutil, subprocess, sys
 
 root = pathlib.Path(__file__).parent
 SRC = root / "src"
-SITE = "https://depraxis.zaylogear.com"
+SITE = "https://dpraxisclinics.com"
 read = lambda p: (SRC / p).read_text(encoding="utf-8")
 
 # ------------------------------------------------------------------ nav
