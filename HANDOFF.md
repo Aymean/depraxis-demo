@@ -38,7 +38,7 @@ use the client's PDF profile content to the max; **do not touch the doctors**.
 | `doctors.html` | the 10 doctor cards — **byte-identical to v8** (verified by string compare); only the section header moved into the page header |
 | `reviews.html` | score panel + scrolling review columns, unchanged |
 | `partners.html` | 9 logos + names, nothing else |
-| `book.html` | the same 3-step booking flow + Apps Script bridge + WhatsApp fallback + shader |
+| `book.html` | 3-step WhatsApp booking REQUEST (dept, preferred day + period, name/note) + shader. No calendar, no network calls (since 2026-10-17) |
 | `contact.html` | old `#visit`: address, hours, phones, parking, access, map |
 | `404.html` | served by Cloudflare for unknown paths (`not_found_handling: "404-page"` added to `wrangler.jsonc`) |
 
@@ -64,8 +64,9 @@ python build.py
   GSAP reveals); per-page: `home.js` (hero video), `cases.js`, `booking.js` (form + shader),
   `inside.js` (about video), `deptindex.js`. GSAP/ScrollTrigger load on every page (cached);
   the booking shader only on `book.html`; `three.module.min.js` is still unreferenced.
-- `BOOKING_API_URL` (v7 calendar bridge) now lives at the top of `src/js/booking.js`, not in
-  `index.html` — change it there and rebuild.
+- Booking (2026-10-17): the Google Calendar / Apps Script bridge is REMOVED. `book.html` builds a
+  WhatsApp message (current site language) to 966543333657 and opens wa.me; reception confirms.
+  `booking-apps-script.gs` stays in the repo only for history (kept in `.assetsignore`).
 - Language: saved in `localStorage["dpx-lang"]`; a tiny inline script in `<head>` sets
   `dir`/`lang` before first paint, so no flash of the wrong language between pages.
 - `.assetsignore` keeps `src/`, `build/`, `build.py`, HANDOFF etc. out of the deploy.
