@@ -16,3 +16,4 @@ node_modules
 .claude
 .wrangler
 wrangler.dpraxis.jsonc
+redirect-worker.js

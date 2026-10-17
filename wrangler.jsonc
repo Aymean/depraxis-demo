@@ -1,9 +1,9 @@
+// Old Worker in the ereespro account (Git-connected: push to main deploys it).
+// It now only 301-redirects depraxis.zaylogear.com to https://dpraxisclinics.com.
+// The real site is deployed to the clinic's account with wrangler.dpraxis.jsonc.
 {
   "name": "depraxis-demo",
+  "main": "redirect-worker.js",
   "compatibility_date": "2026-09-09",
-  "assets": {
-    "directory": "./",
-    "not_found_handling": "404-page"
-  },
   "routes": [{ "pattern": "depraxis.zaylogear.com", "custom_domain": true }]
 }
