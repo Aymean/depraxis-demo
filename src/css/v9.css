@@ -104,6 +104,7 @@ html[dir="ltr"] .statement{font-family:"Fraunces Variable",Georgia,serif;font-we
 .mcard:hover .mfig img{transform:scale(1.035)}
 .mfig .mnum{position:absolute;top:.9rem;inset-inline-start:1rem;font-family:"IBM Plex Serif",Georgia,serif;
   font-size:.8rem;color:#8C6A3F;direction:ltr;unicode-bidi:isolate;z-index:2}
+@media (min-width:1024px){.mfig{aspect-ratio:4/5}}
 /* text-only fallback when no photo is available for a device */
 .mfig--text{background:#151310;align-items:flex-end;justify-content:flex-start;padding:1.4rem 1.3rem}
 .mfig--text::before{content:"";position:absolute;inset:0;
