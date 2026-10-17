@@ -90,6 +90,6 @@
   });
   /* department pages link here as cases.html?filter=dental|derm|laser —
      the page opens at the top with that filter already applied */
-  var q = (location.search.match(/[?&]filter=(dental|derm|laser)/) || [])[1];
+  var q = (location.search.match(/[?&]filter=(dental|derm|laser)/) || [])[1];
   setFilter(q || "all");
 })();

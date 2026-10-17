@@ -1,6 +1,6 @@
 # Handoff — مجمع دي براكسس الطبي / Dpraxis Beauty Clinic (De Praxes Clinic)
 
-Niche: multi-department clinic — dentistry + dermatology/aesthetics + laser + cosmetic surgery
+Niche: multi-department clinic — dentistry + dermatology/aesthetics + laser (cosmetic surgery removed in v9 at the client's request)
 Primary language: Arabic (Arabic-first, full AR/EN toggle)
 Old site: **none — Instagram-only.** No business website exists anywhere. The bio link resolves
 to a Google Maps pin and a Linktree; the Linktree holds only social profiles plus a WhatsApp
@@ -15,6 +15,102 @@ Real email: **none found anywhere** (Instagram, Linktree, Facebook, Google)
 Socials: [IG](https://www.instagram.com/dpraxisclinics.sa) (verified, 14,508 followers, 680 posts) ·
 [TikTok](https://www.tiktok.com/@dpraxis.clinics) (3,762 followers, 878 videos) ·
 Snapchat `dpraxisclinics` · [Facebook](https://www.facebook.com/p/Dpraxis-Beauty-Clinics-61570277572734/)
+
+---
+
+## v9 — multi-page site, cosmetic surgery removed, client profile content (2026-10-17, branch `v9-multipage`)
+
+Client meeting asks (owner: Aymean): no scroll-to-section — every link opens its own page;
+remove cosmetic surgery; add a Partners page; add the profile's machines to a Technology page;
+use the client's PDF profile content to the max; **do not touch the doctors**.
+**Not pushed. `main` untouched.** Push to `main` = live for the client.
+
+### Page map (static files at the repo root)
+
+| Page | What's on it |
+|---|---|
+| `index.html` | video hero (3 departments), department/technology strip, figures, About teaser, department cards, technology teaser (4 device photos), explore cards (cases / doctors / reviews / partners), booking CTA |
+| `about.html` | profile tagline, About Us, Mission, Vision, the clinic-tour video band (old `#inside`), the profile's closing statement |
+| `departments.html` | the old numbered dark rail, 3 departments, index column + "See cases" + "department page" links |
+| `dental.html` · `dermatology.html` · `laser.html` | page header with photo, department text, profile intro + services, "from published cases" list, cross-links |
+| `technology.html` | the profile's 8 devices (photo cards) + the 6 existing techniques |
+| `cases.html` | before/after grid; `cases.html?filter=dental\|derm\|laser` opens pre-filtered, at the top |
+| `doctors.html` | the 10 doctor cards — **byte-identical to v8** (verified by string compare); only the section header moved into the page header |
+| `reviews.html` | score panel + scrolling review columns, unchanged |
+| `partners.html` | 9 logos + names, nothing else |
+| `book.html` | the same 3-step booking flow + Apps Script bridge + WhatsApp fallback + shader |
+| `contact.html` | old `#visit`: address, hours, phones, parking, access, map |
+| `404.html` | served by Cloudflare for unknown paths (`not_found_handling: "404-page"` added to `wrangler.jsonc`) |
+
+Also new: `robots.txt`, `sitemap.xml` (extensionless URLs — Cloudflare's default html handling
+serves `/about.html` as `/about`; canonicals use the same form).
+
+### How to rebuild
+
+```
+python build.py
+```
+
+- Edit **`src/`**, never the root `.html` files (they are generated and committed, because
+  Cloudflare serves the repo as-is).
+- `src/pages/<name>.html` = one page body. First line is a JSON front-matter comment:
+  title AR/EN, meta description, active nav key, breadcrumbs, and which JS modules to load.
+- `src/partials/` = head (meta/OG, early language script), header + nav (current page gets
+  `aria-current="page"`), footer, WhatsApp bubble + mobile bar, icon sprite, JSON-LD (home only).
+- `src/css/site.css` (v8 CSS, smooth-scroll removed) + `src/css/v9.css` (page header, cards,
+  device cards, partner grid) are inlined into every page; Tailwind is compiled/purged from the
+  generated pages and inlined into `<style id="tw">`.
+- `src/js/core.js` on every page (language, WhatsApp prefill, nav, mobile menu, mobile bar,
+  GSAP reveals); per-page: `home.js` (hero video), `cases.js`, `booking.js` (form + shader),
+  `inside.js` (about video), `deptindex.js`. GSAP/ScrollTrigger load on every page (cached);
+  the booking shader only on `book.html`; `three.module.min.js` is still unreferenced.
+- `BOOKING_API_URL` (v7 calendar bridge) now lives at the top of `src/js/booking.js`, not in
+  `index.html` — change it there and rebuild.
+- Language: saved in `localStorage["dpx-lang"]`; a tiny inline script in `<head>` sets
+  `dir`/`lang` before first paint, so no flash of the wrong language between pages.
+- `.assetsignore` keeps `src/`, `build/`, `build.py`, HANDOFF etc. out of the deploy.
+
+### Content decisions (flag to the client if any matter)
+
+- **Cosmetic surgery is gone everywhere** (hero, strip, rail, booking option, footer, meta,
+  JSON-LD). The only remaining "surgery" string is Dr. Kazim's own title "Oral & dental
+  medicine and surgery" inside the untouchable doctor cards.
+- Hero now reads **"Three departments. Ten specialists."** The profile itself has 2
+  departments (Aesthetics/Dermatology/Laser + Dental); the site keeps its 3 pages as the spec says.
+- Device names are the profile's own: Splendor X, DEKA, PicoWay, **Spectra QS** (the photo
+  label actually says Spectra XT), **Genius** (p6 of the profile says "Laser Genesis"),
+  **Ultraformer III** (p9 says "4th generation"), Fractional Laser, HydraFacial (p6 says
+  "HydraFacial Elite"). Not our job to reconcile — but the client may want to.
+- **Fractional Laser has a typographic card, no photo**: the profile reuses the Spectra photo
+  for it, so showing it would put the same machine on the page twice.
+- Small fixes to the profile text: mission EN now says "Dermatology, Aesthetics and Dentistry"
+  (matching her Arabic — her English dropped "Aesthetics"); vision got its missing full stops;
+  "وفع الحواجب" → "رفع الحواجب"; PicoWay EN "fine hair peeling" → "fine hair bleaching" (her
+  Arabic says تشقير); conclusion EN "At D-Praxis" → "At De Praxes" (site's brand spelling);
+  "ميزوثيرابي تذويب الدهن المزدوجة" → "…تذويب الدهون للذقن المزدوجة".
+- PDF extra doctors (13 dental in the profile) **not added** — doctors untouched as instructed.
+- Profile illustrations (AI/stock-looking) are used only as small unlabelled illustrative
+  images on the dermatology/dental pages, with the note "Illustrative images from the clinic's
+  own profile". Hero/large slots use the real clinic photos. Device photos are crops from the
+  profile (`images/machines/`).
+- Partners: Umm Al-Qura University, Zahid Group, Dar Al-Hekma University (wordmark), Alshaya
+  Group, UBT, alinma bank, Saudi Ground Services Company, Lamasat, sela (Latin name only).
+  **Two logos left out** (palm-tree charity, nFit): only blurry poster crops exist — ask the
+  client for the files. No discounts, no percentages, no dates. Logos grayscale at rest,
+  colour on hover. sela's file is a third-party copy upscaled 3× — ask for an official one.
+
+### Verified this session (see the session report for the raw output)
+
+- local server: every page 200; Playwright sweep 14 pages × 1440/390 × AR/EN = 56 renders:
+  0 console errors, 0 horizontal overflow, 0 language leaks, 0 broken images
+- link audit over every `href`/`src`/`poster` in the 14 pages: 0 missing internal targets;
+  only `#` links left are the skip-link `#main` (every page) and the two step-4 buttons on
+  `book.html` whose `href` JS sets before they are shown
+- grep: no `جراحة التجميل` / `dept-surgery` / `scroll-behavior` / "four departments" anywhere
+- booking flow driven to step 3 (department → day → slot → Next → details filled), submit
+  **not** clicked; booking API route was blocked in the test so nothing could reach the calendar
+- language toggled on home → persists on the next page with `dir` already set at load;
+  pages open at `scrollY 0`; `cases.html?filter=dental` shows exactly the 17 dental cases
 
 ---
 

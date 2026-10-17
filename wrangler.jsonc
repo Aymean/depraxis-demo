@@ -2,7 +2,8 @@
   "name": "depraxis-demo",
   "compatibility_date": "2026-09-09",
   "assets": {
-    "directory": "./"
+    "directory": "./",
+    "not_found_handling": "404-page"
   },
   "routes": [{ "pattern": "depraxis.zaylogear.com", "custom_domain": true }]
 }
