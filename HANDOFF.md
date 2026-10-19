@@ -18,6 +18,49 @@ Snapchat `dpraxisclinics` · [Facebook](https://www.facebook.com/p/Dpraxis-Beaut
 
 ---
 
+## v9.1 — doctor portraits + profile titles + Dr. Rania Hanna (2026-10-19, `main`, not deployed)
+
+- **New studio portraits** for Abir, Kazim (Dr. Ahmed Kazem), Alaa, Ameer, Baraa + new Rania:
+  background removed, flat site cream `#F5F1E8`, same framing for all (640×640 WebP q85).
+  Eman, Fatma, Sally, Muaz, Tharaa still show their old photos until the clinic sends theirs.
+- **Titles**: every card's specialty line (AR + EN) now uses the client profile's own wording
+  (PDF pp. 21–29). The profile has no English title line for Dr. Kazem or Dr. Tharaa — their EN
+  line is a translation of the Arabic title. Bios, ratings and Instagram links unchanged.
+- **Dr. Rania Hanna** added (dental, last card): paediatric dentistry, University of Paris. No
+  rating / Instagram on record, so that row is simply omitted.
+- Counts: 11 doctors (home hero, home figure + explore card, home meta, doctors page header +
+  meta), dental 8 (home strip, dental + departments pages; the department paragraph now also
+  names "a paediatric dentist").
+
+### Doctor photo tool — `tools/process_doctor.py`
+
+One command per photo (run from the repo root; originals stay in Downloads, never in the repo):
+
+```
+python -I tools/process_doctor.py "C:/Users/lotze/Downloads/Dr.Eman.JPEG" eman
+python -I tools/process_doctor.py "C:/Users/lotze/Downloads/Dr.Fatma.JPEG" fatma
+python -I tools/process_doctor.py "C:/Users/lotze/Downloads/Dr.Sally.JPEG" sally
+python -I tools/process_doctor.py "C:/Users/lotze/Downloads/Dr.Muaz.JPEG"  muaz
+python -I tools/process_doctor.py "C:/Users/lotze/Downloads/Dr.Tharaa.JPEG" tharaa
+```
+
+It writes `images/dr-<slug>.webp` (overwrites). Steps: EXIF orientation → rembg
+`birefnet-portrait` (falls back to `birefnet-general`) → alpha cleanup + foreground colour
+estimation (pymatting, no wall-coloured halo in hair) → composite on `#F5F1E8` → face + eyes found
+with OpenCV's YuNet detector (230 KB model, auto-downloaded once to `~/.cache/dpx/`), scaled so the face box is 25.5% of the frame height, eye line at 32%, centred →
+640×640 WebP q85. `--debug` also saves a transparent cut-out PNG next to the output (delete it,
+don't commit it); `--out DIR` writes somewhere else for a dry run. Needs rembg 2.x, pymatting,
+opencv-python, pillow; the model (~1 GB) is already downloaded at
+`~/.rembg/models/birefnet-portrait/birefnet-portrait.onnx` (rembg 2.0.85 path). On a new PC
+rembg's own download is slow (~3 MB/s); faster: `curl -L` the file
+`BiRefNet-portrait-epoch_150.onnx` from the rembg GitHub release `v0.0.0` and save it under that
+name/path. A new doctor also needs a card in `src/pages/doctors.html` + the counts above, then
+`python build.py`. `tools/` is in `.assetsignore` (not deployed).
+
+Works best on the clinic's current style of photo: one person, facing camera, 3/4 length,
+plain wall. If the face isn't detected it prints a WARNING and frames from the mask — look at
+the result.
+
 ## v9 — multi-page site, cosmetic surgery removed, client profile content (2026-10-17, branch `v9-multipage`)
 
 Client meeting asks (owner: Aymean): no scroll-to-section — every link opens its own page;

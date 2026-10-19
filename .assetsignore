@@ -17,3 +17,4 @@ node_modules
 .wrangler
 wrangler.dpraxis.jsonc
 redirect-worker.js
+tools
