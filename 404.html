@@ -401,6 +401,7 @@ html[dir="rtl"] .ihb{--ihb-x:-1}
 @media (prefers-reduced-motion:reduce){
   .tcols{max-height:none;overflow:visible;-webkit-mask-image:none;mask-image:none}
   .tcol-track{animation:none}
+  .tdup{display:none}
 }
 
 /* =====================================================================
@@ -549,6 +550,15 @@ html[dir="ltr"] .statement{font-family:"Fraunces Variable",Georgia,serif;font-we
 /* book page: the booking section is the page — clear the fixed nav */
 .book-page > .relative{padding-top:calc(68px + 3rem)}
 @media (min-width:768px){.book-page > .relative{padding-top:calc(86px + 4.25rem)}}
+
+/* dermatology hero: the department's three doctors instead of one session photo */
+.phead-team-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;list-style:none;margin:0;padding:0}
+.phead-team-card{display:block;overflow:hidden;border-radius:12px;background:#F5F1E8;aspect-ratio:3/4;
+  box-shadow:inset 0 0 0 1px rgba(245,241,232,.08)}
+.phead-team-card img{width:100%;height:100%;object-fit:cover;object-position:50% 18%;transition:transform .6s ease}
+.phead-team-card:hover img{transform:scale(1.04)}
+.phead-team-name{margin-top:.7rem;font-size:.8rem;line-height:1.6;color:rgba(245,241,232,.78)}
+.phead-team figcaption{margin-top:1.1rem;font-size:.74rem;color:rgba(245,241,232,.5)}
 
 </style>
 </head>

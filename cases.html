@@ -6,14 +6,14 @@
 <script>/* set the saved language before first paint — no flash of the wrong one */
 (function(){try{if(localStorage.getItem("dpx-lang")==="en"){var h=document.documentElement;h.setAttribute("lang","en");h.setAttribute("dir","ltr");document.title=h.getAttribute("data-title-en")||document.title;}}catch(e){}})();</script>
 <title>الحالات — قبل وبعد | مجمع دي براكسس الطبي، جدة</title>
-<meta name="description" content="27 حالة قبل وبعد نشرها مجمع دي براكسس الطبي بنفسه، ولكل حالة طبيبها بالاسم — الأسنان، الجلدية والتجميل، والليزر.">
+<meta name="description" content="25 حالة قبل وبعد نشرها مجمع دي براكسس الطبي بنفسه، ولكل حالة طبيبها بالاسم — الأسنان، الجلدية والتجميل، والليزر.">
 <meta name="theme-color" content="#F5F1E8">
 <link rel="canonical" href="https://dpraxisclinics.com/cases">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="مجمع دي براكسس الطبي">
 <meta property="og:title" content="الحالات — قبل وبعد | مجمع دي براكسس الطبي، جدة">
-<meta property="og:description" content="27 حالة قبل وبعد نشرها مجمع دي براكسس الطبي بنفسه، ولكل حالة طبيبها بالاسم — الأسنان، الجلدية والتجميل، والليزر.">
+<meta property="og:description" content="25 حالة قبل وبعد نشرها مجمع دي براكسس الطبي بنفسه، ولكل حالة طبيبها بالاسم — الأسنان، الجلدية والتجميل، والليزر.">
 <meta property="og:url" content="https://dpraxisclinics.com/cases">
 <meta property="og:locale" content="ar_SA">
 <meta property="og:locale:alternate" content="en_US">
@@ -22,7 +22,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="الحالات — قبل وبعد | مجمع دي براكسس الطبي، جدة">
-<meta name="twitter:description" content="27 حالة قبل وبعد نشرها مجمع دي براكسس الطبي بنفسه، ولكل حالة طبيبها بالاسم — الأسنان، الجلدية والتجميل، والليزر.">
+<meta name="twitter:description" content="25 حالة قبل وبعد نشرها مجمع دي براكسس الطبي بنفسه، ولكل حالة طبيبها بالاسم — الأسنان، الجلدية والتجميل، والليزر.">
 <meta name="twitter:image" content="https://dpraxisclinics.com/images/og-image.jpg">
 
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23221F1B'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' fill='%23C8B08A' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
@@ -399,6 +399,7 @@ html[dir="rtl"] .ihb{--ihb-x:-1}
 @media (prefers-reduced-motion:reduce){
   .tcols{max-height:none;overflow:visible;-webkit-mask-image:none;mask-image:none}
   .tcol-track{animation:none}
+  .tdup{display:none}
 }
 
 /* =====================================================================
@@ -547,6 +548,15 @@ html[dir="ltr"] .statement{font-family:"Fraunces Variable",Georgia,serif;font-we
 /* book page: the booking section is the page — clear the fixed nav */
 .book-page > .relative{padding-top:calc(68px + 3rem)}
 @media (min-width:768px){.book-page > .relative{padding-top:calc(86px + 4.25rem)}}
+
+/* dermatology hero: the department's three doctors instead of one session photo */
+.phead-team-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;list-style:none;margin:0;padding:0}
+.phead-team-card{display:block;overflow:hidden;border-radius:12px;background:#F5F1E8;aspect-ratio:3/4;
+  box-shadow:inset 0 0 0 1px rgba(245,241,232,.08)}
+.phead-team-card img{width:100%;height:100%;object-fit:cover;object-position:50% 18%;transition:transform .6s ease}
+.phead-team-card:hover img{transform:scale(1.04)}
+.phead-team-name{margin-top:.7rem;font-size:.8rem;line-height:1.6;color:rgba(245,241,232,.78)}
+.phead-team figcaption{margin-top:1.1rem;font-size:.74rem;color:rgba(245,241,232,.5)}
 
 </style>
 </head>
@@ -1008,9 +1018,7 @@ var DPX = window.DPX = window.DPX || {};
     {s:"case-lips-eman-2",       d:"derm",   ar:"فيلر الشفاه",                   en:"Lip filler",                 dar:"د. إيمان عصام",      den:"Dr. Eman Esam"},
     {s:"case-lips-eman-3",       d:"derm",   ar:"رسم وتحديد الشفاه",             en:"Lip definition",             dar:"د. إيمان عصام",      den:"Dr. Eman Esam"},
     {s:"case-radiesse-fatma-2",  d:"derm",   ar:"شدّ الوجه والرقبة",             en:"Face &amp; neck tightening", dar:"د. فاطمة أحمد يوسف", den:"Dr. Fatma Ahmed Youssef"},
-    {s:"case-collagen-fatma-3",  d:"derm",   ar:"محفّزات الكولاجين",             en:"Collagen stimulators",       dar:"د. فاطمة أحمد يوسف", den:"Dr. Fatma Ahmed Youssef"},
     {s:"case-chin-sally-1",      d:"derm",   ar:"تحديد الذقن والفك",             en:"Chin &amp; jawline",         dar:"د. سالي محمود حمدي", den:"Dr. Sally Mahmoud Hamdy"},
-    {s:"case-collagen-sally-2",  d:"derm",   ar:"محفّزات كولاجين وفيلر",         en:"Collagen &amp; filler",      dar:"د. سالي محمود حمدي", den:"Dr. Sally Mahmoud Hamdy"},
     {s:"case-contour-sally-3",   d:"derm",   ar:"تحديد الملامح",                 en:"Facial contouring",          dar:"د. سالي محمود حمدي", den:"Dr. Sally Mahmoud Hamdy"},
     {s:"case-picoway-eman-4",    d:"laser",  ar:"تفتيح الكوع بالبيكو واي",       en:"Elbow lightening, PicoWay",  dar:"د. إيمان عصام",      den:"Dr. Eman Esam"},
     {s:"case-hands-fatma-4",     d:"laser",  ar:"توحيد لون اليدين",              en:"Hand tone evening",          dar:"د. فاطمة أحمد يوسف", den:"Dr. Fatma Ahmed Youssef"}

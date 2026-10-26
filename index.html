@@ -455,6 +455,7 @@ html[dir="rtl"] .ihb{--ihb-x:-1}
 @media (prefers-reduced-motion:reduce){
   .tcols{max-height:none;overflow:visible;-webkit-mask-image:none;mask-image:none}
   .tcol-track{animation:none}
+  .tdup{display:none}
 }
 
 /* =====================================================================
@@ -603,6 +604,15 @@ html[dir="ltr"] .statement{font-family:"Fraunces Variable",Georgia,serif;font-we
 /* book page: the booking section is the page — clear the fixed nav */
 .book-page > .relative{padding-top:calc(68px + 3rem)}
 @media (min-width:768px){.book-page > .relative{padding-top:calc(86px + 4.25rem)}}
+
+/* dermatology hero: the department's three doctors instead of one session photo */
+.phead-team-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;list-style:none;margin:0;padding:0}
+.phead-team-card{display:block;overflow:hidden;border-radius:12px;background:#F5F1E8;aspect-ratio:3/4;
+  box-shadow:inset 0 0 0 1px rgba(245,241,232,.08)}
+.phead-team-card img{width:100%;height:100%;object-fit:cover;object-position:50% 18%;transition:transform .6s ease}
+.phead-team-card:hover img{transform:scale(1.04)}
+.phead-team-name{margin-top:.7rem;font-size:.8rem;line-height:1.6;color:rgba(245,241,232,.78)}
+.phead-team figcaption{margin-top:1.1rem;font-size:.74rem;color:rgba(245,241,232,.5)}
 
 </style>
 </head>
@@ -888,7 +898,7 @@ html[dir="ltr"] .statement{font-family:"Fraunces Variable",Georgia,serif;font-we
         </p>
       </div>
       <div class="reveal">
-        <p class="num text-[2.4rem] sm:text-[3rem] text-ink leading-none" data-count="27">27</p>
+        <p class="num text-[2.4rem] sm:text-[3rem] text-ink leading-none" data-count="25">25</p>
         <p class="mt-3 text-[.86rem] text-muted leading-relaxed">
           <span lang-ar>حالة موثّقة بصور قبل وبعد</span>
           <span lang-en>Documented before-and-after cases</span>
@@ -932,8 +942,8 @@ html[dir="ltr"] .statement{font-family:"Fraunces Variable",Georgia,serif;font-we
       <div class="lg:col-span-7">
         <p class="eyebrow reveal"><span lang-ar>الأقسام</span><span lang-en>Departments</span></p>
         <h2 class="display mt-4 text-[1.9rem] sm:text-[2.6rem] lg:text-[3rem] text-cream reveal">
-          <span lang-ar>مجمعٌ طبّي،<span class="h-accent">لا عيادة بثلاثة أسماء.</span></span>
-          <span lang-en>A medical complex —<span class="h-accent">not three labels.</span></span>
+          <span lang-ar>مجمعٌ طبّي واحد،<span class="h-accent">بثلاثة تخصّصات.</span></span>
+          <span lang-en>One medical complex —<span class="h-accent">three specialties.</span></span>
         </h2>
       </div>
       <p class="lg:col-span-5 mt-6 lg:mt-0 text-[.98rem] leading-[1.95] text-cream/65 reveal">
@@ -1034,7 +1044,7 @@ html[dir="ltr"] .statement{font-family:"Fraunces Variable",Georgia,serif;font-we
     <div class="mt-12 sm:mt-16 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
       <a href="cases.html" class="lcard reveal">
         <span>
-          <span class="num block text-[2.6rem] leading-none text-ink">27</span>
+          <span class="num block text-[2.6rem] leading-none text-ink">25</span>
           <span class="block mt-5 text-[1.1rem] text-ink"><span lang-ar>الحالات</span><span lang-en>Cases</span></span>
           <span class="block mt-2 text-[.86rem] leading-[1.8] text-muted"><span lang-ar>قبل وبعد، ولكل حالة طبيبها بالاسم.</span><span lang-en>Before and after, each credited to its doctor.</span></span>
         </span>

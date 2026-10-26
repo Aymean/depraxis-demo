@@ -26,9 +26,7 @@
     {s:"case-lips-eman-2",       d:"derm",   ar:"فيلر الشفاه",                   en:"Lip filler",                 dar:"د. إيمان عصام",      den:"Dr. Eman Esam"},
     {s:"case-lips-eman-3",       d:"derm",   ar:"رسم وتحديد الشفاه",             en:"Lip definition",             dar:"د. إيمان عصام",      den:"Dr. Eman Esam"},
     {s:"case-radiesse-fatma-2",  d:"derm",   ar:"شدّ الوجه والرقبة",             en:"Face &amp; neck tightening", dar:"د. فاطمة أحمد يوسف", den:"Dr. Fatma Ahmed Youssef"},
-    {s:"case-collagen-fatma-3",  d:"derm",   ar:"محفّزات الكولاجين",             en:"Collagen stimulators",       dar:"د. فاطمة أحمد يوسف", den:"Dr. Fatma Ahmed Youssef"},
     {s:"case-chin-sally-1",      d:"derm",   ar:"تحديد الذقن والفك",             en:"Chin &amp; jawline",         dar:"د. سالي محمود حمدي", den:"Dr. Sally Mahmoud Hamdy"},
-    {s:"case-collagen-sally-2",  d:"derm",   ar:"محفّزات كولاجين وفيلر",         en:"Collagen &amp; filler",      dar:"د. سالي محمود حمدي", den:"Dr. Sally Mahmoud Hamdy"},
     {s:"case-contour-sally-3",   d:"derm",   ar:"تحديد الملامح",                 en:"Facial contouring",          dar:"د. سالي محمود حمدي", den:"Dr. Sally Mahmoud Hamdy"},
     {s:"case-picoway-eman-4",    d:"laser",  ar:"تفتيح الكوع بالبيكو واي",       en:"Elbow lightening, PicoWay",  dar:"د. إيمان عصام",      den:"Dr. Eman Esam"},
     {s:"case-hands-fatma-4",     d:"laser",  ar:"توحيد لون اليدين",              en:"Hand tone evening",          dar:"د. فاطمة أحمد يوسف", den:"Dr. Fatma Ahmed Youssef"}

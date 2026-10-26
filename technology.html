@@ -399,6 +399,7 @@ html[dir="rtl"] .ihb{--ihb-x:-1}
 @media (prefers-reduced-motion:reduce){
   .tcols{max-height:none;overflow:visible;-webkit-mask-image:none;mask-image:none}
   .tcol-track{animation:none}
+  .tdup{display:none}
 }
 
 /* =====================================================================
@@ -547,6 +548,15 @@ html[dir="ltr"] .statement{font-family:"Fraunces Variable",Georgia,serif;font-we
 /* book page: the booking section is the page — clear the fixed nav */
 .book-page > .relative{padding-top:calc(68px + 3rem)}
 @media (min-width:768px){.book-page > .relative{padding-top:calc(86px + 4.25rem)}}
+
+/* dermatology hero: the department's three doctors instead of one session photo */
+.phead-team-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;list-style:none;margin:0;padding:0}
+.phead-team-card{display:block;overflow:hidden;border-radius:12px;background:#F5F1E8;aspect-ratio:3/4;
+  box-shadow:inset 0 0 0 1px rgba(245,241,232,.08)}
+.phead-team-card img{width:100%;height:100%;object-fit:cover;object-position:50% 18%;transition:transform .6s ease}
+.phead-team-card:hover img{transform:scale(1.04)}
+.phead-team-name{margin-top:.7rem;font-size:.8rem;line-height:1.6;color:rgba(245,241,232,.78)}
+.phead-team figcaption{margin-top:1.1rem;font-size:.74rem;color:rgba(245,241,232,.5)}
 
 </style>
 </head>
@@ -870,7 +880,7 @@ html[dir="ltr"] .statement{font-family:"Fraunces Variable",Georgia,serif;font-we
         <span class="num text-[.85rem] text-bronze">06</span>
         <div>
           <h3 class="text-[1.1rem] sm:text-[1.3rem] text-ink"><span lang-ar>البيكو واي والليزر الكربوني</span><span lang-en>PicoWay &amp; carbon laser</span></h3>
-          <p class="mt-2 text-[.9rem] leading-[1.9] text-muted max-w-[52ch]"><span lang-ar>مسار التصبّغات وتوحيد اللون. يُستخدَم في مناطق يتجنّبها كثيرون — الكوعان واليدان — وهي من الحالات المنشورة فعلاً.</span><span lang-en>The pigmentation and tone-evening track. Used on areas many clinics skip — elbows and hands — which are among the cases actually published.</span></p>
+          <p class="mt-2 text-[.9rem] leading-[1.9] text-muted max-w-[52ch]"><span lang-ar>مسار التصبّغات وتوحيد اللون. يُستخدَم في مناطق يتجنّبها كثيرون — الأكواع والأيدي — وهي من الحالات المنشورة فعلاً.</span><span lang-en>The pigmentation and tone-evening track. Used on areas many clinics skip — elbows and hands — which are among the cases actually published.</span></p>
         </div>
         <span class="hidden sm:block text-[.8rem] text-faint col-start-2 sm:col-start-3 sm:text-end"><span lang-ar>الليزر</span><span lang-en>Laser</span></span>
       </li>
